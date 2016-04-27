@@ -14,23 +14,33 @@
         <br />
         <span class="auto-style1"><strong>Spørsmål:<br />
         <br />
+        <asp:Image ID="Image1" runat="server" />
         </strong>
-        <asp:Label ID="Label1" runat="server" CssClass="auto-style2" Text="Label"></asp:Label>
-        <strong>
-        <br />
-        <br />
-        </strong>
-        <asp:RadioButton ID="RadioButton1" runat="server" CssClass="auto-style2" />
         </span>
         <br />
         <br />
-        <asp:RadioButton ID="RadioButton2" runat="server" />
+        <asp:Panel ID="Panel1" runat="server">
+            <span class="auto-style1">
+            <asp:Label ID="Label1" runat="server" CssClass="auto-style2" Text="Label"></asp:Label>
+            <br />
+            <br />
+            <asp:RadioButton ID="RadioButton1" runat="server" CssClass="auto-style2" GroupName="Answers" />
+            <br />
+            <br />
+            <asp:RadioButton ID="RadioButton2" runat="server" GroupName="Answers" />
+            <br />
+            <br />
+            <asp:RadioButton ID="RadioButton3" runat="server" GroupName="Answers" />
+            <br />
+            <br />
+            <asp:RadioButton ID="RadioButton4" runat="server" GroupName="Answers" />
+            </span>
+        </asp:Panel>
         <br />
         <br />
-        <asp:RadioButton ID="RadioButton3" runat="server" />
         <br />
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Neste spørsmål" />
         <br />
-        <asp:RadioButton ID="RadioButton4" runat="server" />
         <br />
         <br />
         <br />
