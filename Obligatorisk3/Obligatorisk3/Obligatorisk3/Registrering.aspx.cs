@@ -45,7 +45,7 @@ namespace Obligatorisk3
                 com.Parameters.AddWithValue("@password", TextBoxPass.Text);
 
                 com.ExecuteNonQuery();
-                Response.Redirect("Manager.aspx");
+                Response.Redirect("Users.aspx");
                 Response.Write("Registrering er fullført");
 
                 conn.Close();
