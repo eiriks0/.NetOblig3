@@ -23,6 +23,15 @@ namespace Obligatorisk3
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            GetQuestion();
+        }
+
+        protected void GetQuestion()
+        {
+
+            Random rnd = new Random();
+            int QuetsionNumber = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
+
             if (Session["New"] != null)
             {
                 Label_welcome.Text += Session["New"].ToString();
@@ -32,18 +41,18 @@ namespace Obligatorisk3
 
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
-            str = "select * from Quiz where QuestionId=2";
+            str = "select * from Quiz where QuestionId=" + QuetsionNumber;
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
             reader.Read();
             Label1.Text = reader["Question"].ToString();
-            
+
             RadioButton1.Text = reader["Answer"].ToString();
-           
+
             RadioButton2.Text = reader["Anwer2"].ToString();
-          
+
             RadioButton3.Text = reader["Anwer3"].ToString();
-        
+
             RadioButton4.Text = reader["CorrectAns"].ToString();
 
             Image1.ImageUrl = reader["Picture"].ToString();
@@ -61,7 +70,7 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
-
+            GetQuestion();
         }
     }
 }
