@@ -45,6 +45,7 @@ namespace Obligatorisk3
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
             reader.Read();
+            Label1.Text = reader["Question"].ToString();
             Random rnd1 = new Random();
             int questionorder = rnd.Next(1, 4); //Generere random int mellom 1 og 4 (4 er ikke med).
 
@@ -80,7 +81,7 @@ namespace Obligatorisk3
 
                 RadioButton2.Text = reader["Anwer3"].ToString();
 
-                RadioButton3.Text = reader["Anwer"].ToString();
+                RadioButton3.Text = reader["Answer"].ToString();
 
                 RadioButton4.Text = reader["CorrectAns"].ToString();
 
