@@ -42,8 +42,6 @@ namespace Obligatorisk3
 
             GetQuestion();
 
-<<<<<<< HEAD
-        
         }
 
         private SqlDataReader InitQuestion()
@@ -58,13 +56,11 @@ namespace Obligatorisk3
             SqlDataReader reader = com.ExecuteReader();
             return reader;
 
-=======
         }
 
         public static void AddQuestion(int Number)
         {
             Questions.Add(Number);
->>>>>>> 6d9f1816d64e2452b1294694f6a497faab786b3e
         }
 
         protected void GetQuestion()
