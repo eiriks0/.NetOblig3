@@ -11,6 +11,8 @@ namespace Obligatorisk3
 {
     public partial class Login : System.Web.UI.Page
     {
+        private bool errorToggled = false;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["New"] != null)
@@ -41,12 +43,12 @@ namespace Obligatorisk3
                 }
                 else
                 {
-                    Response.Write("Passordet er ikke riktig");
+                    errorToggled = true;
                 }
             }
             else
             {
-                Response.Write("Brukernavn er ikke riktig");
+                errorToggled = true;
             
             }
 
@@ -54,6 +56,15 @@ namespace Obligatorisk3
             {
                 Response.Redirect("Manager.aspx");
             }
+
+            if (errorToggled)
+            {
+                ShowUserNamePasswordErrorMessage();
+            }
+        }
+        private void ShowUserNamePasswordErrorMessage()
+        {
+
         }
     }
 }

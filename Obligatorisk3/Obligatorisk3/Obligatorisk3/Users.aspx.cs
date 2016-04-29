@@ -20,6 +20,7 @@ namespace Obligatorisk3
         string strConnString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
         string str;
         SqlCommand com;
+        SqlDataReader Question;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -30,6 +31,22 @@ namespace Obligatorisk3
             }
 
             GetQuestion();
+
+        
+        }
+
+        private SqlDataReader InitQuestion()
+        {
+            Random rnd = new Random();
+            int RandQuestionId = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
+
+            SqlConnection con = new SqlConnection(strConnString);
+            con.Open();
+            str = "SELECT * FROM Quiz WHERE QuestionId=" + RandQuestionId;
+            com = new SqlCommand(str, con);
+            SqlDataReader reader = com.ExecuteReader();
+            return reader;
+
         }
 
         protected void GetQuestion()

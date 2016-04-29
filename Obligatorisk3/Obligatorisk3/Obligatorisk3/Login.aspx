@@ -6,7 +6,7 @@
     
     <div id="login-content" class="auto-style1">
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-6 col-md-offset-1">
                 <h4>Vennligst logg inn for å fortsette</h4>
                 <table class="auto-style2">
                     <tr>
