@@ -42,18 +42,22 @@
             <div class="container">
                 <div class="navbar-header">
                     
-                    <a class="navbar-brand" runat="server" href="~/Login.aspx">Teoritest på nett</a>
+                    <a class="navbar-brand" runat="server" href="~/">Teoritest på nett</a>
                 </div>
                 <div class="navbar-collapse collapse">
-                    
-                    <asp:LoginView runat="server" ViewStateMode="Disabled">
-                        <AnonymousTemplate>
-                           
-                        </AnonymousTemplate>
-                        <LoggedInTemplate>
-                            
-                        </LoggedInTemplate>
-                    </asp:LoginView>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                        <% if (Session["New"] == null) { %>
+                        
+                            <button tabindex="9999" onclick="redirect('Login.aspx')" class="btn btn-xs btn-success btn-login">Logg inn</button>    
+
+                        <% } else { %>
+
+                            <asp:Button TabIndex="9998" runat="server" CssClass="btn btn-xs btn-danger btn-logout" Text="Logg ut" OnClick="Click_LogOut" />
+
+                        <% } %>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -70,6 +74,11 @@
             </footer>
         </div>
     </form>
+    <script type="text/javascript">
+        function redirect(url) {
+            window.location.href = url;
+        }
+    </script>
 </body>
 </html>
 

@@ -72,6 +72,12 @@ namespace Obligatorisk3
 
         }
 
+        public void Click_LogOut(object sender, EventArgs e)
+        {
+            Session["New"] = null;
+            Response.Redirect("Default.aspx");
+        }
+
         protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)
         {
             Context.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);

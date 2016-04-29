@@ -13,7 +13,10 @@ namespace Obligatorisk3
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (Session["New"] != null)
+            {
+                Response.Redirect("Default.aspx");
+            }
         }
 
         protected void Button_Login_Click(object sender, EventArgs e)

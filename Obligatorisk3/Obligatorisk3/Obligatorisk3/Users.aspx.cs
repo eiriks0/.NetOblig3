@@ -23,6 +23,12 @@ namespace Obligatorisk3
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["New"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
             GetQuestion();
         }
 
@@ -31,14 +37,7 @@ namespace Obligatorisk3
 
             Random rnd = new Random();
             int QuetsionNumber = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
-
-            if (Session["New"] != null)
-            {
-                Label_welcome.Text += Session["New"].ToString();
-            }
-            else
-                Response.Redirect("Login.aspx");
-
+            
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
             str = "select * from Quiz where QuestionId=" + QuetsionNumber;
@@ -80,7 +79,7 @@ namespace Obligatorisk3
 
                 RadioButton2.Text = reader["Anwer3"].ToString();
 
-                RadioButton3.Text = reader["Anwer"].ToString();
+                RadioButton3.Text = reader["Answer"].ToString();
 
                 RadioButton4.Text = reader["CorrectAns"].ToString();
 
