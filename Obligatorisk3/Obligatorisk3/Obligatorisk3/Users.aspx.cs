@@ -44,6 +44,7 @@ namespace Obligatorisk3
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
             reader.Read();
+            QuestionText.Text = reader["Question"].ToString();
             Random rnd1 = new Random();
             int questionorder = rnd.Next(1, 4); //Generere random int mellom 1 og 4 (4 er ikke med).
 
