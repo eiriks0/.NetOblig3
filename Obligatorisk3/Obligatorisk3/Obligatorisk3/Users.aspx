@@ -4,8 +4,8 @@
 
     
     <div class="row">
-        <div class="col-md-10">
-            <div class="panel panel-default">
+        <div class="col-md-9">
+            <div class="panel panel-success">
                 <div class="panel-heading">
                     <h4>Spørsmål (1/10)</h4>
                 </div>
@@ -22,8 +22,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="panel panel-muted">
+        <div class="col-md-3">
+            <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4>Tips:</h4>
                 </div>

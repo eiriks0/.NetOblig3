@@ -46,17 +46,19 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
-                        <% if (Session["New"] == null) { %>
                         
+                        <% if (Session["New"] == null) { %>
+                            <li>
                             <button tabindex="9999" onclick="redirect('Login.aspx')" class="btn btn-xs btn-success btn-login">Logg inn</button>    
-
+                            </li>
                         <% } else { %>
-
-                            <asp:Button TabIndex="9998" runat="server" CssClass="btn btn-xs btn-danger btn-logout" Text="Logg ut" OnClick="Click_LogOut" />
-
+                            <li>
+                                <a href="Manager.aspx"><%= Session["New"].ToString() %></a>
+                            </li>
+                            <li>
+                                <asp:Button TabIndex="9998" runat="server" CssClass="btn btn-xs btn-danger btn-logout" Text="Logg ut" OnClick="Click_LogOut" />
+                            </li>
                         <% } %>
-                        </li>
                     </ul>
                 </div>
             </div>
