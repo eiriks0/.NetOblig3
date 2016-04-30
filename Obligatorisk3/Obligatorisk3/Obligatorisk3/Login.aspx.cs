@@ -19,6 +19,8 @@ namespace Obligatorisk3
             {
                 Response.Redirect("Default.aspx");
             }
+
+            TextBoxUserName.Focus();
         }
 
         protected void Button_Login_Click(object sender, EventArgs e)

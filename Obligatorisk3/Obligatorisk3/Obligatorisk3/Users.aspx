@@ -7,18 +7,20 @@
         <div class="col-md-9">
             <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h4>Spørsmål (1/10)</h4>
+                    <h4>Spørsmål (<asp:Label runat="server" ID="QuestionCounter"></asp:Label>)</h4>
+                </div>
+                <div runat="server" id="PanelProgress" class="panel-progress">
+                    <div runat="server" id="PanelProgressbar" style="width: 0%;" class="panel-progressbar"></div>
                 </div>
                 <div class="panel-body">
-                    <asp:Label runat="server" ID="QuestionText"></asp:Label>
-                    <asp:Image ID="Image1" runat="server" />
-                    <asp:Panel ID="Panel1" runat="server">
-                        <asp:RadioButton ID="RadioButton1" runat="server" CssClass="question-block" GroupName="Answers" />
-                        <asp:RadioButton ID="RadioButton2" runat="server" CssClass="question-block" GroupName="Answers" />
-                        <asp:RadioButton ID="RadioButton3" runat="server" CssClass="question-block" GroupName="Answers" />
-                        <asp:RadioButton ID="RadioButton4" runat="server" CssClass="question-block" GroupName="Answers" />
-                    </asp:Panel>
-                    <asp:Button ID="Button1" runat="server" CssClass="btn btn-success" OnClick="Button1_Click" Text="Neste spørsmål" />
+                    <div class="col-md-6">
+                        <asp:Label runat="server" ID="QuestionText"></asp:Label>
+                        <asp:RadioButtonList runat="server" ID="Answers"></asp:RadioButtonList>
+                        <asp:Button ID="Button1" runat="server" CssClass="btn btn-success" OnClick="Button1_Click" Text="Neste spørsmål" />
+                    </div>
+                    <div class="col-md-6">
+                        <asp:Image ID="TrafficQuestionImage" runat="server" />
+                    </div>
                 </div>
             </div>
         </div>

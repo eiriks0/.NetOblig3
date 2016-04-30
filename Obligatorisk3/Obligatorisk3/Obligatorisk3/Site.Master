@@ -49,11 +49,11 @@
                         
                         <% if (Session["New"] == null) { %>
                             <li>
-                            <button tabindex="9999" onclick="redirect('Login.aspx')" class="btn btn-xs btn-success btn-login">Logg inn</button>    
+                            <button tabindex="9999" id="log-in-navbar-btn" class="btn btn-xs btn-success btn-login">Logg inn</button>    
                             </li>
                         <% } else { %>
                             <li>
-                                <a href="Manager.aspx"><%= Session["New"].ToString() %></a>
+                                <a href="Manager.aspx"><i class="glyphicon glyphicon-user"></i> <%= Session["New"].ToString() %></a>
                             </li>
                             <li>
                                 <asp:Button TabIndex="9998" runat="server" CssClass="btn btn-xs btn-danger btn-logout" Text="Logg ut" OnClick="Click_LogOut" />
@@ -77,9 +77,11 @@
         </div>
     </form>
     <script type="text/javascript">
-        function redirect(url) {
-            window.location.href = url;
-        }
+        var loginBtn = document.getElementById('log-in-navbar-btn');
+        loginBtn.addEventListener("click", function (e) {
+            location.replace('/Login');
+            e.preventDefault();
+        })
     </script>
 </body>
 </html>

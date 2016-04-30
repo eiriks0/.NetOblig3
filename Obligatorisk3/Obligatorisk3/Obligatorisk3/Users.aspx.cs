@@ -22,140 +22,62 @@ namespace Obligatorisk3
         string strConnString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
         string str;
         SqlCommand com;
-        SqlDataReader Question;
 
         protected static int MaxQuestions = 5;
         protected static int QuestionsAnswered = 0;
-        protected static int CurrentQuestion;
+        protected float CurrentQuestion;
+        protected float MaxAmountOfQuestions = 10;
         public static List<int> Questions = new List<int>();
-
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
-
             if (Session["New"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            GetQuestion();
+            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
 
+            DrawQuestion();
         }
 
-        private SqlDataReader InitQuestion()
+        /** 
+         * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
+         * 
+          */
+        private void DrawQuestion()
         {
             Random rnd = new Random();
+            Random rndQuestionOrder = new Random();
             int RandQuestionId = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
-
+            
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
             str = "SELECT * FROM Quiz WHERE QuestionId=" + RandQuestionId;
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
-            return reader;
+            reader.Read();
 
-        }
+            RadioButton[] rbuttons = new RadioButton[4];
 
-        public static void AddQuestion(int Number)
-        {
-            Questions.Add(Number);
-        }
+            string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
+            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x=>rnd.Next()).ToArray();
 
-        protected void GetQuestion()
-        {
-
-            Random rnd = new Random();
-
-            //Generates random int 1 to 17 (last number excluded).
-            CurrentQuestion = rnd.Next(1, 18);
-
-            // Checks if int (QuestionID) is already in list. If true, we generate a new question until we find one that is not in the list.
-            if (Questions.Contains(CurrentQuestion))
+            for (int i = 0; i < sqlDataReaderKeys.Length; i++)
             {
-                while (Questions.Contains(CurrentQuestion))
-                {
-                    CurrentQuestion = rnd.Next(1, 18);
-                    return;
-                }
+                ListItem li = new ListItem();
+                li.Text = reader[sqlDataReaderKeys[i]].ToString();
+                li.Value = (sqlDataReaderKeys[i] == "CorrectAns") ? "Answer4" : sqlDataReaderKeys[i];
+                li.Selected = (i == 0) ? true : false;
+
+                Answers.Items.Add(li);
             }
 
-            //Adds current questions id to int list.
-            AddQuestion(CurrentQuestion);
-            //Adds one to questions answered.
-            QuestionsAnswered = QuestionsAnswered + 1;
+            QuestionText.Text = reader["Question"].ToString();
+            QuestionCounter.Text = CurrentQuestion.ToString() + "/" + MaxAmountOfQuestions.ToString();
 
-            //If QuestionsAnswered is equal to MaxQuestions + 1
-            if (QuestionsAnswered == MaxQuestions + 1)
-            {
-                RadioButton1.Text = "Done!";
-
-                RadioButton2.Text = "Done!";
-
-                RadioButton3.Text = "Done!";
-
-                RadioButton4.Text = "Done!";
-
-            }
-
-            //If QuestionsAnswered is less than MaxQuestions we get the new question based on the generated int "CurrentQuestion"
-            if (QuestionsAnswered < MaxQuestions)
-            {
-                SqlConnection con = new SqlConnection(strConnString);
-                con.Open();
-                str = "select * from Quiz where QuestionId=" + CurrentQuestion;
-                com = new SqlCommand(str, con);
-                SqlDataReader reader = com.ExecuteReader();
-                reader.Read();
-                QuestionText.Text = reader["Question"].ToString();
-                Random rnd1 = new Random();
-                int questionorder = rnd.Next(1, 4); //Generere random int mellom 1 og 4 (4 er ikke med).
-
-                if (questionorder == 1)
-                {
-                    RadioButton1.Text = reader["Answer"].ToString();
-
-                    RadioButton2.Text = reader["CorrectAns"].ToString();
-
-                    RadioButton3.Text = reader["Anwer3"].ToString();
-
-                    RadioButton4.Text = reader["Anwer2"].ToString();
-
-                    Image1.ImageUrl = reader["Picture"].ToString();
-                }
-
-                if (questionorder == 2)
-                {
-                    RadioButton1.Text = reader["Anwer3"].ToString();
-
-                    RadioButton2.Text = reader["Answer"].ToString();
-
-                    RadioButton3.Text = reader["CorrectAns"].ToString();
-
-                    RadioButton4.Text = reader["Anwer2"].ToString();
-
-                    Image1.ImageUrl = reader["Picture"].ToString();
-                }
-
-                if (questionorder == 3)
-                {
-                    RadioButton1.Text = reader["Anwer2"].ToString();
-
-                    RadioButton2.Text = reader["Anwer3"].ToString();
-
-                    RadioButton3.Text = reader["Answer"].ToString();
-
-                    RadioButton4.Text = reader["CorrectAns"].ToString();
-
-                    Image1.ImageUrl = reader["Picture"].ToString();
-                }
-
-
-                con.Close();
-            }
-
-
+            con.Close();
         }
 
         protected void B_Logout_Click(object sender, EventArgs e)
@@ -166,7 +88,21 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
-            GetQuestion();
+            if (CurrentQuestion >= MaxAmountOfQuestions) {
+                PanelProgressbar.Style["background-color"] = "#0094ff";
+                return;
+            }
+            Answers.Items.Clear();
+            QuestionText.Text = "";
+            CurrentQuestion = CurrentQuestion+1;
+            string sth = Answers.SelectedValue.ToString();
+            DrawQuestion();
+            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+            QuestionText.Text += sth;
+            if (sth == "Answer4")
+            {
+                QuestionText.ForeColor = System.Drawing.Color.Olive;
+            }
         }
     }
 }

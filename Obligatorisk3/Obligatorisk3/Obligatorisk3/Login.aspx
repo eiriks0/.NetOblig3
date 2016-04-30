@@ -12,7 +12,7 @@
                     <tr>
                         <td class="auto-style4">Brukernavn:</td>
                         <td class="auto-style5">
-                            <asp:TextBox ID="TextBoxUserName" runat="server" style="text-align: left" CssClass="form-control" Width="180px"></asp:TextBox>
+                            <asp:TextBox TabIndex="1" ID="TextBoxUserName" runat="server" style="text-align: left" CssClass="form-control" Width="180px"></asp:TextBox>
                         </td>
                         <td class="auto-style9">
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="TextBoxUserName" CssClass="auto-style7" ErrorMessage="Vennligst skriv inn brukernavn" ForeColor="Red" style="text-align: right"></asp:RequiredFieldValidator>
@@ -21,7 +21,7 @@
                     <tr>
                         <td class="auto-style4">Passord:</td>
                         <td class="auto-style5">
-                            <asp:TextBox ID="TextBoxPassword" runat="server" CssClass="form-control" TextMode="Password" Width="180px"></asp:TextBox>
+                            <asp:TextBox TabIndex="2" ID="TextBoxPassword" runat="server" CssClass="form-control" TextMode="Password" Width="180px"></asp:TextBox>
                         </td>
                         <td class="auto-style9">
                             <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="TextBoxPassword" CssClass="auto-style7" ErrorMessage="Vennligst skriv inn passord" ForeColor="Red" style="text-align: right"></asp:RequiredFieldValidator>
@@ -31,7 +31,7 @@
                         <td class="auto-style3">&nbsp;</td>
                         <td class="auto-style5">
                             <br />
-                            <asp:Button ID="Button_Login" runat="server" CssClass="auto-style10 btn btn-primary" OnClick="Button_Login_Click" Text="Logg inn" />
+                            <asp:Button ID="Button_Login" TabIndex="3" runat="server" CssClass="auto-style10 btn btn-primary" OnClick="Button_Login_Click" Text="Logg inn" />
                         </td>
                         <td class="auto-style9">&nbsp;</td>
                     </tr>
