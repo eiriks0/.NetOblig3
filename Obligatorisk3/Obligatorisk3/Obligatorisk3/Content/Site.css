@@ -53,11 +53,15 @@ body {
 }
 
 .question-title {
-    font-size: 20px;
-    margin: 0 0 20px 0;
+    font-size: 16px;
+    padding: 10px;
     display: block;
+    font-weight: 600;
+    border-radius: 5px;
 }
-
+.question-image {
+    width: 100%;
+}
 
 
 .panel-progress {

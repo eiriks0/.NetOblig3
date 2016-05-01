@@ -25,8 +25,8 @@ namespace Obligatorisk3
 
         protected static int MaxQuestions = 5;
         protected static int QuestionsAnswered = 0;
-        protected float CurrentQuestion;
-        protected float MaxAmountOfQuestions = 10;
+        protected double CurrentQuestion;
+        protected double MaxAmountOfQuestions = 10;
         public static List<int> Questions = new List<int>();
 
         protected void Page_Load(object sender, EventArgs e)
@@ -37,6 +37,12 @@ namespace Obligatorisk3
                 return;
             }
 
+            if (Session["CurrentPage"] == null)
+            {
+                Session["CurrentPage"] = 1.0;
+            }
+
+            CurrentQuestion = Convert.ToDouble(Session["CurrentPage"]);
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
 
             DrawQuestion();
@@ -54,7 +60,7 @@ namespace Obligatorisk3
             
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
-            str = "SELECT * FROM Quiz WHERE QuestionId=" + RandQuestionId;
+            str = "SELECT * FROM Quiz WHERE QuestionId=16"; // + RandQuestionId;
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
             reader.Read();
@@ -72,6 +78,11 @@ namespace Obligatorisk3
                 li.Selected = (i == 0) ? true : false;
 
                 Answers.Items.Add(li);
+            }
+
+            if (reader["Picture"] != null)
+            {
+                TrafficQuestionImage.ImageUrl = reader["Picture"].ToString();
             }
 
             QuestionText.Text = reader["Question"].ToString();
@@ -92,9 +103,11 @@ namespace Obligatorisk3
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 return;
             }
+            
             Answers.Items.Clear();
+            CurrentQuestion++;
+            Session["CurrentPage"] = CurrentQuestion;
             QuestionText.Text = "";
-            CurrentQuestion = CurrentQuestion+1;
             string sth = Answers.SelectedValue.ToString();
             DrawQuestion();
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";

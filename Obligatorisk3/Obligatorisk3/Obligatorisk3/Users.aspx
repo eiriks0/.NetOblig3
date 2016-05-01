@@ -13,13 +13,15 @@
                     <div runat="server" id="PanelProgressbar" style="width: 0%;" class="panel-progressbar"></div>
                 </div>
                 <div class="panel-body">
-                    <div class="col-md-6">
-                        <asp:Label runat="server" ID="QuestionText"></asp:Label>
+                    <div class="col-md-8">
+                        <p class="question-title">
+                            <asp:Label runat="server" ID="QuestionText"></asp:Label>
+                        </p>
                         <asp:RadioButtonList runat="server" ID="Answers"></asp:RadioButtonList>
                         <asp:Button ID="Button1" runat="server" CssClass="btn btn-success" OnClick="Button1_Click" Text="Neste spørsmål" />
                     </div>
-                    <div class="col-md-6">
-                        <asp:Image ID="TrafficQuestionImage" runat="server" />
+                    <div class="col-md-4">
+                        <asp:Image ID="TrafficQuestionImage" CssClass="question-image" runat="server" />
                     </div>
                 </div>
             </div>

@@ -82,6 +82,8 @@
             location.replace('/Login');
             e.preventDefault();
         })
+
+
     </script>
 </body>
 </html>
