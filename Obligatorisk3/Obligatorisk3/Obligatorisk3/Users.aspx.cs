@@ -28,6 +28,7 @@ namespace Obligatorisk3
         protected double CurrentQuestion;
         protected double MaxAmountOfQuestions = 10;
         public static List<int> Questions = new List<int>();
+        public static List<int> WrongAnswerList = new List<int>();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -49,6 +50,36 @@ namespace Obligatorisk3
         }
 
         /** 
+        * Generates labels based on the ints saved in the WrongAnswerList
+        * 
+         */
+        private void DisplayWrongAnswers()
+        {
+
+            foreach (int Answer in WrongAnswerList)
+            {
+                SqlConnection con = new SqlConnection(strConnString);
+                con.Open();
+                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answer;
+                com = new SqlCommand(str, con);
+                SqlDataReader reader = com.ExecuteReader();
+                reader.Read();
+                string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
+                string question = reader["Question"].ToString();
+                string answer = reader["CorrectAns"].ToString();
+                Label NewQuestionLabel = new Label();
+                Label NewAnswerLabel = new Label();
+                NewQuestionLabel.Text = question;
+                NewAnswerLabel.Text = answer;
+                //Debug{
+                System.Diagnostics.Debug.WriteLine(NewQuestionLabel.Text);
+                System.Diagnostics.Debug.WriteLine(NewAnswerLabel.Text);
+                //}
+                con.Close();
+            }
+        }
+
+        /** 
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
          * 
           */
@@ -57,7 +88,7 @@ namespace Obligatorisk3
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
             int RandQuestionId = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
-            
+
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
             str = "SELECT * FROM Quiz WHERE QuestionId=" + RandQuestionId;
@@ -68,7 +99,7 @@ namespace Obligatorisk3
             RadioButton[] rbuttons = new RadioButton[4];
 
             string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x=>rnd.Next()).ToArray();
+            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next()).ToArray();
 
             for (int i = 0; i < sqlDataReaderKeys.Length; i++)
             {
@@ -99,10 +130,14 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
+
+
+
             Answers.Items.Clear();
             QuestionText.Text = "";
 
-            if (CurrentQuestion >= MaxAmountOfQuestions) {
+            if (CurrentQuestion >= MaxAmountOfQuestions)
+            {
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Enabled = false;
                 return;
@@ -124,3 +159,5 @@ namespace Obligatorisk3
         }
     }
 }
+
+
