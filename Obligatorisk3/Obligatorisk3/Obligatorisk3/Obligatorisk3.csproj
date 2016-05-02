@@ -217,7 +217,6 @@
     <Content Include="Manager.aspx" />
     <Content Include="Pictures\klasse_b_slutt.jpg" />
     <Content Include="Registrering.aspx" />
-    <Content Include="Results.aspx" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -410,13 +409,6 @@
     </Compile>
     <Compile Include="Registrering.aspx.designer.cs">
       <DependentUpon>Registrering.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Results.aspx.cs">
-      <DependentUpon>Results.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Results.aspx.designer.cs">
-      <DependentUpon>Results.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
