@@ -51,7 +51,7 @@
                         <td class="auto-style4">&nbsp;</td>
                         <td class="auto-style6">
                             <br />
-                            <asp:Button ID="Button1" runat="server" CssClass="btn btn-primary" OnClick="Button1_Click" Text="Registrer" />
+                            <asp:Button ID="Button1_Register" runat="server" CssClass="btn btn-primary" OnClick="Button1_Click" Text="Registrer" />
                             <input id="Reset1" class="auto-style10 btn btn-danger" type="reset" value="Reset" /></td>
                         <td>&nbsp;</td>
                     </tr>

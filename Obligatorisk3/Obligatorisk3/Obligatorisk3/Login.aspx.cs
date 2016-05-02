@@ -40,7 +40,13 @@ namespace Obligatorisk3
                 if (password == TextBoxPassword.Text)
                 {
                     Session["New"] = TextBoxUserName.Text;
-                    Response.Write("Passordet er riktig");
+
+                    if (TextBoxUserName.Text == "admin")
+                    {
+                        Response.Redirect("Manager.aspx");
+                        return;
+                    }
+
                     Response.Redirect("Users.aspx");
                 }
                 else
@@ -52,11 +58,6 @@ namespace Obligatorisk3
             {
                 errorToggled = true;
             
-            }
-
-            if (TextBoxUserName.Text == "admin" && TextBoxPassword.Text == "admin")
-            {
-                Response.Redirect("Manager.aspx");
             }
 
             if (errorToggled)

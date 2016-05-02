@@ -130,9 +130,8 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
-
-
-
+            string sth = Answers.SelectedValue;
+            
             Answers.Items.Clear();
             QuestionText.Text = "";
 
@@ -145,17 +144,16 @@ namespace Obligatorisk3
 
             CurrentQuestion++;
             Session["CurrentPage"] = CurrentQuestion;
-            string sth = Answers.SelectedValue;
 
             System.Diagnostics.Debug.WriteLine("Answers.SelectedValue" + sth);
 
-            DrawQuestion();
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
-            QuestionText.Text += sth;
             if (sth == "Answer4")
             {
                 QuestionText.ForeColor = System.Drawing.Color.Olive;
             }
+
+            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+            DrawQuestion();
         }
     }
 }
