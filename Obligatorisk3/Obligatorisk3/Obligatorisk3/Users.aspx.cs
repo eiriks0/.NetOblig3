@@ -112,7 +112,7 @@ namespace Obligatorisk3
             Session["CurrentPage"] = CurrentQuestion;
             string sth = Answers.SelectedValue;
 
-            System.Diagnostics.Debug.WriteLine("Answers.SelectedValue");
+            System.Diagnostics.Debug.WriteLine("Answers.SelectedValue" + sth);
 
             DrawQuestion();
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
