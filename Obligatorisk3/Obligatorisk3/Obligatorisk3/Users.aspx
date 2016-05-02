@@ -21,6 +21,7 @@
                                 <asp:Label runat="server" ID="QuestionText"></asp:Label>
                             </p>
                             <asp:RadioButtonList runat="server" ID="Answers"></asp:RadioButtonList>
+                                    <asp:Panel runat="server" ID="Panel1"></asp:Panel>
                         </div>
                         <div class="col-md-4">
                             <asp:Image ID="TrafficQuestionImage" CssClass="question-image" runat="server" />
