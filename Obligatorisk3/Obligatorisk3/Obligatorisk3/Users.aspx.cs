@@ -60,7 +60,7 @@ namespace Obligatorisk3
             
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
-            str = "SELECT * FROM Quiz WHERE QuestionId=16"; // + RandQuestionId;
+            str = "SELECT * FROM Quiz WHERE QuestionId=" + RandQuestionId;
             com = new SqlCommand(str, con);
             SqlDataReader reader = com.ExecuteReader();
             reader.Read();
@@ -99,16 +99,21 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
+            Answers.Items.Clear();
+            QuestionText.Text = "";
+
             if (CurrentQuestion >= MaxAmountOfQuestions) {
                 PanelProgressbar.Style["background-color"] = "#0094ff";
+                Button1.Enabled = false;
                 return;
             }
-            
-            Answers.Items.Clear();
+
             CurrentQuestion++;
             Session["CurrentPage"] = CurrentQuestion;
-            QuestionText.Text = "";
-            string sth = Answers.SelectedValue.ToString();
+            string sth = Answers.SelectedValue;
+
+            System.Diagnostics.Debug.WriteLine("Answers.SelectedValue");
+
             DrawQuestion();
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
             QuestionText.Text += sth;

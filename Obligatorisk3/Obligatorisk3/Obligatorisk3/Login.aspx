@@ -59,5 +59,14 @@
         </div>
     
     </div>
+
+    <script type="text/javascript">
+        var loginBtn = document.getElementById('log-in-navbar-btn');
+        loginBtn.addEventListener("click", function (e) {
+            location.replace('/Login');
+            e.preventDefault();
+        });
+    </script>
+
     </asp:Content>
 

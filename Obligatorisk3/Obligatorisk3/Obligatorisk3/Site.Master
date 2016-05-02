@@ -76,15 +76,6 @@
             </footer>
         </div>
     </form>
-    <script type="text/javascript">
-        var loginBtn = document.getElementById('log-in-navbar-btn');
-        loginBtn.addEventListener("click", function (e) {
-            location.replace('/Login');
-            e.preventDefault();
-        })
-
-
-    </script>
 </body>
 </html>
 

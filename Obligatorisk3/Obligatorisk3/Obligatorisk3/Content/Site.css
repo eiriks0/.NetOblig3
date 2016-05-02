@@ -64,16 +64,32 @@ body {
 }
 
 
-.panel-progress {
-    margin: 0;
-    height: 5px;
-    border-top: 1px solid #eaeaea;
-    border-bottom: 1px solid #eaeaea;
-    width: 100%;
-    padding: 0;
+.progress {
+    margin-bottom: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
-.panel-progressbar {
-    text-align: center;
-    height: 5px;
-    background-color: #ff0000;
+
+#MainContent_Button1 {
+    width: 100%;
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    right: 0;
+
+    border-radius: 0;
+}
+
+.question-wrapper {
+    margin-bottom: 30px;
+}
+
+.btn-success[disabled] {
+    background-color: #91B191;
+    border-color: #7F9A7F;
+    color: #f1f1f1;
+}
+
+.btn[disabled] {
+    opacity: 1;
 }
