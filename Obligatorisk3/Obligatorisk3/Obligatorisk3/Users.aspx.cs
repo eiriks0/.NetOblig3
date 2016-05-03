@@ -213,6 +213,8 @@ namespace Obligatorisk3 {
         // Handling "new quiz" button
         protected void Button2_Click(object sender, EventArgs e) {
             Session["CurrentPage"] = null;
+            Answered.Clear();
+            AnswerList.Clear();
             Button1.Visible = true;
             Button2.Visible = false;
             Button3.Visible = false;
