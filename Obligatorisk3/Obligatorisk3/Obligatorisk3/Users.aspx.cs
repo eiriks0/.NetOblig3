@@ -30,6 +30,8 @@ namespace Obligatorisk3
         public static List<int> RightAnswerList = new List<int>();
         public static List<int> WrongAnswerList = new List<int>();
 
+        public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["New"] == null)
