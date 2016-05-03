@@ -14,8 +14,10 @@ using System.Xml.Linq;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
-namespace Obligatorisk3 {
-    public partial class Users : System.Web.UI.Page {
+namespace Obligatorisk3
+{
+    public partial class Users : System.Web.UI.Page
+    {
         string strConnString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
         string str;
         SqlCommand com;
@@ -36,17 +38,21 @@ namespace Obligatorisk3 {
 
         private const int NUM_QUESTIONS_IN_DB = 20;
 
-        protected void Page_Load(object sender, EventArgs e) {
-            if (Session["New"] == null) {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["New"] == null)
+            {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
             // Fill the list with question IDs and set it in the user's session.
-            if (Session["questionIDs"] == null) {
+            if (Session["questionIDs"] == null)
+            {
                 List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
 
-                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++) {
+                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++)
+                {
                     questionIDs.Add(i);
                 }
 
@@ -54,7 +60,8 @@ namespace Obligatorisk3 {
                 Session["questionIDs"] = questionIDs;
             }
 
-            if (Session["CurrentPage"] == null) {
+            if (Session["CurrentPage"] == null)
+            {
                 Session["CurrentPage"] = 1.0;
             }
 
@@ -62,10 +69,12 @@ namespace Obligatorisk3 {
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
 
             // Draw question if button is NOT clicked
-            if(Session["isButtonClicked"] == null || (bool)Session["isButtonClicked"] == false) {
+            if (Session["isButtonClicked"] == null || (bool)Session["isButtonClicked"] == false)
+            {
                 DrawQuestion();
             }
-            else if((bool)Session["isButtonClicked"] == true) {
+            else if ((bool)Session["isButtonClicked"] == true)
+            {
                 // Buttonclick will draw question, we do not need to draw one on page load.
                 // Set isButtonClicked to false.
                 Session["isButtonClicked"] = false;
@@ -159,7 +168,8 @@ namespace Obligatorisk3 {
         /**
          *  Returns a random, but not already used, question ID.
          */
-        private int getRandomQuestionID() {
+        private int getRandomQuestionID()
+        {
             int questionIdToReturn;
 
             List<int> questionIDs = (List<int>)Session["questionIDs"];
@@ -180,7 +190,8 @@ namespace Obligatorisk3 {
         /** 
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
          */
-        private void DrawQuestion() {
+        private void DrawQuestion()
+        {
             Debug.WriteLine(">>>>>>>>>>>>>>>>>>>>> DrawQuestion() called! <<<<<<<<<<<<<<<<<<<<<<<<<");
 
             CurrentAskedQuestion = getRandomQuestionID();
@@ -198,7 +209,8 @@ namespace Obligatorisk3 {
             string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
             sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next()).ToArray();
 
-            for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
+            for (int i = 0; i < sqlDataReaderKeys.Length; i++)
+            {
                 ListItem li = new ListItem();
                 li.Text = reader[sqlDataReaderKeys[i]].ToString();
                 li.Value = (sqlDataReaderKeys[i] == "CorrectAns") ? "Answer4" : sqlDataReaderKeys[i];
@@ -207,7 +219,8 @@ namespace Obligatorisk3 {
                 Answers.Items.Add(li);
             }
 
-            if (reader["Picture"] != null) {
+            if (reader["Picture"] != null)
+            {
                 TrafficQuestionImage.ImageUrl = reader["Picture"].ToString();
             }
 
@@ -217,28 +230,35 @@ namespace Obligatorisk3 {
             con.Close();
         }
 
-        protected void B_Logout_Click(object sender, EventArgs e) {
+        protected void B_Logout_Click(object sender, EventArgs e)
+        {
             Session["New"] = null;
             Response.Redirect("Login.aspx");
         }
 
-        protected void Button1_Click(object sender, EventArgs e) {
+        protected void Button1_Click(object sender, EventArgs e)
+        {
             Session["isButtonClicked"] = true;
 
             string sth = Answers.SelectedValue; // get the current selected value from radio button list
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-               // RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
+                // RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
                 Answered.Add("CorrectAns");
-            } else {
+
+            }
+            else {
                 //WrongAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of wrong answers
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
                 Answered.Add(sth);
             }
 
             Answers.Items.Clear();
             QuestionText.Text = "";
 
-            if (CurrentQuestion >= MaxAmountOfQuestions) {
+            if (CurrentQuestion >= MaxAmountOfQuestions)
+            {
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Visible = false;
@@ -249,7 +269,8 @@ namespace Obligatorisk3 {
 
             CurrentQuestion++;
 
-            if (CurrentQuestion == MaxAmountOfQuestions) {
+            if (CurrentQuestion == MaxAmountOfQuestions)
+            {
                 Button1.Text = "Se resultater";
             }
 
@@ -261,7 +282,8 @@ namespace Obligatorisk3 {
         }
 
         // Handling "new quiz" button
-        protected void Button2_Click(object sender, EventArgs e) {
+        protected void Button2_Click(object sender, EventArgs e)
+        {
             Session["CurrentPage"] = null;
             Button1.Visible = true;
             Button2.Visible = false;
@@ -269,7 +291,8 @@ namespace Obligatorisk3 {
             Response.Redirect(Request.RawUrl); // reloads the page
         }
 
-        protected void Button3_Click(object sender, EventArgs e) {
+        protected void Button3_Click(object sender, EventArgs e)
+        {
             // save score to highscore table
         }
     }
