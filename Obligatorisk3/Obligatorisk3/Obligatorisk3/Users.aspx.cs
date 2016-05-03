@@ -53,12 +53,20 @@ namespace Obligatorisk3 {
 
             if (Session["CurrentPage"] == null) {
                 Session["CurrentPage"] = 1.0;
-
-                DrawQuestion(); // Only draw question if it's the first page load. The button will be responsible for drawing questions after that.
             }
 
             CurrentQuestion = Convert.ToDouble(Session["CurrentPage"]);
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+
+            // Draw question if button is NOT clicked
+            if(Session["isButtonClicked"] == null || (bool)Session["isButtonClicked"] == false) {
+                DrawQuestion();
+            }
+            else if((bool)Session["isButtonClicked"] == true) {
+                // Buttonclick will draw question, we do not need to draw one on page load.
+                // Set isButtonClicked to false.
+                Session["isButtonClicked"] = false;
+            }
         }
 
         /** 
@@ -192,6 +200,8 @@ namespace Obligatorisk3 {
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
          */
         private void DrawQuestion() {
+            Debug.WriteLine(">>>>>>>>>>>>>>>>>>>>> DrawQuestion() called! <<<<<<<<<<<<<<<<<<<<<<<<<");
+
             CurrentAskedQuestion = getRandomQuestionID();
 
             SqlConnection con = new SqlConnection(strConnString);
@@ -232,6 +242,8 @@ namespace Obligatorisk3 {
         }
 
         protected void Button1_Click(object sender, EventArgs e) {
+            Session["isButtonClicked"] = true;
+
             string sth = Answers.SelectedValue; // get the current selected value from radio button list
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
