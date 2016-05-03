@@ -25,9 +25,8 @@ namespace Obligatorisk3 {
         protected double CurrentQuestion;
         protected double MaxAmountOfQuestions = 10;
         public static List<int> Questions = new List<int>();
-        public static List<int> RightAnswerList = new List<int>();
-        public static List<int> WrongAnswerList = new List<int>();
         public static string _Answered;
+        public static int TotalScore = -1;
 
         public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
 
@@ -56,17 +55,11 @@ namespace Obligatorisk3 {
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
 
-            TheScore.InnerText = RightAnswerList.Count.ToString();
-
-
-
-            foreach (KeyValuePair<int, bool> Answers in AnswerList) {
-
-
+            foreach (KeyValuePair<int, bool> Answer in AnswerList) {
 
                 SqlConnection con = new SqlConnection(strConnString);
                 con.Open();
-                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
+                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answer.Key;
                 com = new SqlCommand(str, con);
                 SqlDataReader reader = com.ExecuteReader();
                 reader.Read();
@@ -94,10 +87,10 @@ namespace Obligatorisk3 {
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
                 CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                _Answered = Answered[AnswerList.IndexOf(Answers)];
+                _Answered = Answered[AnswerList.IndexOf(Answer)];
                 string WrongAnswer = reader[_Answered].ToString();
 
-                if (!Answers.Value) {
+                if (!Answer.Value) {
                     AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
                     AnswerLabel1.ForeColor = System.Drawing.Color.Red;
                     WrongResults.Controls.Add(NewQuestionLabel);
@@ -106,10 +99,10 @@ namespace Obligatorisk3 {
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
                     WrongResults.Controls.Add(CorrectAnswerLabel);
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
-                    WrongResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                if (Answers.Value) {
+                if (Answer.Value) {
+                    TotalScore = (TotalScore == -1) ? 1 : TotalScore + 1;
                     CorrectResults.Controls.Add(NewQuestionLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                     CorrectResults.Controls.Add(AnswerLabel1);
@@ -121,6 +114,8 @@ namespace Obligatorisk3 {
                     CorrectResults.Controls.Add(CorrectAnswerLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                 }
+
+                TheScore.InnerText = TotalScore.ToString();
 
                 con.Close();
             }
@@ -135,7 +130,7 @@ namespace Obligatorisk3 {
         private void DrawQuestion() {
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
-            CurrentAskedQuestion = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
+            CurrentAskedQuestion = rnd.Next(1, 21); //Generere random int mellom 1 og 20 (eksklusiv).
 
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
@@ -178,11 +173,12 @@ namespace Obligatorisk3 {
             string sth = Answers.SelectedValue; // get the current selected value from radio button list
 
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
+                                  // because the database design is not very good.... JUNE!!!!!!!!!!!!!
             {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
+                AnswerList.Add(new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
                 Answered.Add("CorrectAns");
             } else {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
+                AnswerList.Add(new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
                 Answered.Add(sth);
             }
 
@@ -222,6 +218,10 @@ namespace Obligatorisk3 {
         }
 
         protected void Button3_Click(object sender, EventArgs e) {
+            if (TotalScore >= 0)
+            {
+
+            }
             // save score to highscore table
         }
     }
