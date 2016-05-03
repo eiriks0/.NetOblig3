@@ -216,6 +216,7 @@
     <Content Include="Login.aspx" />
     <Content Include="Manager.aspx" />
     <Content Include="Pictures\klasse_b_slutt.jpg" />
+    <Content Include="Pictures\vei.jpg" />
     <Content Include="Registrering.aspx" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
