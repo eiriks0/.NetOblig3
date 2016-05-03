@@ -135,7 +135,7 @@ namespace Obligatorisk3 {
         private void DrawQuestion() {
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
-            CurrentAskedQuestion = rnd.Next(1, 18); //Generere random int mellom 1 og 17 (18 er ikke med).
+            CurrentAskedQuestion = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
 
             SqlConnection con = new SqlConnection(strConnString);
             con.Open();
