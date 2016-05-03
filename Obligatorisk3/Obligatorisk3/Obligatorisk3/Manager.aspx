@@ -25,9 +25,17 @@
             <SortedDescendingCellStyle BackColor="#E5E5E5" />
             <SortedDescendingHeaderStyle BackColor="#242121" />
         </asp:GridView>
-        <asp:SqlDataSource ID="SqlDataSourceRegistration" runat="server" ConnectionString="<%$ ConnectionStrings:RegistrationConnectionString %>" SelectCommand="SELECT ID, UserName, Email, Highscores.Score FROM [UserData]
-INNER JOIN Highscores ON
-UserData.UserId = Highscores.UserId"></asp:SqlDataSource>
+        <asp:SqlDataSource
+            ID="SqlDataSourceRegistration"
+            runat="server"
+            ConnectionString="<%$ ConnectionStrings:RegistrationConnectionString %>"
+            SelectCommand="
+                SELECT UserData.UserId AS InternalUserId, UserData.ID, UserData.UserName, Email, Highscores.Score
+                FROM UserData
+                LEFT JOIN Highscores ON
+                UserData.UserId = Highscores.UserId
+            "
+            ></asp:SqlDataSource>
     
     </div>
  
