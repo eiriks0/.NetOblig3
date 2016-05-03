@@ -29,8 +29,11 @@ namespace Obligatorisk3
         public static List<int> Questions = new List<int>();
         public static List<int> RightAnswerList = new List<int>();
         public static List<int> WrongAnswerList = new List<int>();
+        public static string _Answered;
 
         public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
+
+        public static List<string> Answered = new List<string>();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -61,12 +64,16 @@ namespace Obligatorisk3
 
             TheScore.InnerText = RightAnswerList.Count.ToString();
 
-            //gets all the wrong answers
-            foreach (int Answer in WrongAnswerList)
+
+
+            foreach (KeyValuePair<int, bool> Answers in AnswerList)
             {
+
+
+
                 SqlConnection con = new SqlConnection(strConnString);
                 con.Open();
-                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answer;
+                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
                 com = new SqlCommand(str, con);
                 SqlDataReader reader = com.ExecuteReader();
                 reader.Read();
@@ -87,72 +94,42 @@ namespace Obligatorisk3
                 NewQuestionLabel.Text = question;
                 NewQuestionLabel.Font.Size = 12;
                 NewQuestionLabel.Font.Bold = true;
-                AnswerLabel1.Text = "1:" + " " + Answer1;
+                AnswerLabel1.Text = "1:" + " " + Answer1 + _Answered;
                 AnswerLabel2.Text = "2:" + " " + Answer2;
                 AnswerLabel3.Text = "3:" + " " + Answer3;
                 CorrectAnswerLabel.Text = "Riktig svar:" + " " + CorrectAnswer;
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
                 CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                WrongResults.Controls.Add(NewQuestionLabel);
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
-                WrongResults.Controls.Add(AnswerLabel1);
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
-                WrongResults.Controls.Add(AnswerLabel2);
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
-                WrongResults.Controls.Add(AnswerLabel3);
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
-                WrongResults.Controls.Add(CorrectAnswerLabel);
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
-                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                _Answered = Answered[AnswerList.IndexOf(Answers)];
+                string WrongAnswer = reader[_Answered].ToString();
 
-                con.Close();
-            }
+                if (!Answers.Value)
+                {
+                    AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
+                    AnswerLabel1.ForeColor = System.Drawing.Color.Red;
+                    WrongResults.Controls.Add(NewQuestionLabel);
+                    WrongResults.Controls.Add(new LiteralControl("<br />"));
+                    WrongResults.Controls.Add(AnswerLabel1);
+                    WrongResults.Controls.Add(new LiteralControl("<br />"));
+                    WrongResults.Controls.Add(CorrectAnswerLabel);
+                    WrongResults.Controls.Add(new LiteralControl("<br />"));
+                    WrongResults.Controls.Add(new LiteralControl("<br />"));
+                }
 
-            //gets all the right answers
-            foreach (int Answer in RightAnswerList)
-            {
-                SqlConnection con = new SqlConnection(strConnString);
-                con.Open();
-                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answer;
-                com = new SqlCommand(str, con);
-                SqlDataReader reader = com.ExecuteReader();
-                reader.Read();
-                string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-
-                string question = reader["Question"].ToString();
-                string Answer1 = reader["Answer"].ToString();
-                string Answer2 = reader["Anwer2"].ToString();
-                string Answer3 = reader["Anwer3"].ToString();
-                string CorrectAnswer = reader["CorrectAns"].ToString();
-
-                Label NewQuestionLabel = new Label();
-                Label AnswerLabel1 = new Label();
-                Label AnswerLabel2 = new Label();
-                Label AnswerLabel3 = new Label();
-                Label CorrectAnswerLabel = new Label();
-
-                NewQuestionLabel.Text = question;
-                NewQuestionLabel.Font.Size = 12;
-                NewQuestionLabel.Font.Bold = true;
-                AnswerLabel1.Text = "1:" + " " + Answer1;
-                AnswerLabel2.Text = "2:" + " " + Answer2;
-                AnswerLabel3.Text = "3:" + " " + Answer3;
-                CorrectAnswerLabel.Text = "Riktig svar:" + " " + CorrectAnswer;
-                CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
-                CorrectAnswerLabel.Style["font-weight"] = "900";
-
-                CorrectResults.Controls.Add(NewQuestionLabel);
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
-                CorrectResults.Controls.Add(AnswerLabel1);
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
-                CorrectResults.Controls.Add(AnswerLabel2);
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
-                CorrectResults.Controls.Add(AnswerLabel3);
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
-                CorrectResults.Controls.Add(CorrectAnswerLabel);
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
-                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                if (Answers.Value)
+                {
+                    CorrectResults.Controls.Add(NewQuestionLabel);
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                    CorrectResults.Controls.Add(AnswerLabel1);
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                    CorrectResults.Controls.Add(AnswerLabel2);
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                    CorrectResults.Controls.Add(AnswerLabel3);
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                    CorrectResults.Controls.Add(CorrectAnswerLabel);
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                }
 
                 con.Close();
             }
@@ -211,14 +188,18 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
+
             string sth = Answers.SelectedValue; // get the current selected value from radio button list
+
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
+                Answered.Add("CorrectAns");
             }
             else
             {
-                WrongAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of wrong answers
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
+                Answered.Add(sth);
             }
 
             Answers.Items.Clear();
@@ -236,7 +217,8 @@ namespace Obligatorisk3
 
             CurrentQuestion++;
 
-            if (CurrentQuestion == MaxAmountOfQuestions) {
+            if (CurrentQuestion == MaxAmountOfQuestions)
+            {
                 Button1.Text = "Se resultater";
             }
 
@@ -262,6 +244,8 @@ namespace Obligatorisk3
         }
     }
 }
+
+
 
 
 
