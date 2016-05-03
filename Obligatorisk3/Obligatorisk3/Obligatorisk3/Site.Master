@@ -49,7 +49,7 @@
                         
                         <% if (Session["New"] == null) { %>
                             <li>
-                            <button tabindex="9999" id="log-in-navbar-btn" class="btn btn-xs btn-success btn-login">Logg inn</button>    
+                                <a href="Login.aspx">Logg inn</a>    
                             </li>
                         <% } else { %>
                             <li>
