@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -57,17 +55,10 @@ namespace Obligatorisk3
          */
         private void DisplayAnswers()
         {
-            Panel1.Height = 1500;
             TrafficQuestionImage.ImageUrl = null;
-            Panel1.HorizontalAlign = HorizontalAlign.Left;
-            //Sets header over the wrong answers
-            Label WrongAnswersHeaderLabel = new Label();
-            WrongAnswersHeaderLabel.Text = "Du fikk feil svar på disse spørsmålene!";
-            WrongAnswersHeaderLabel.Font.Size = 16;
-            WrongAnswersHeaderLabel.Font.Bold = true;
-            Panel1.Controls.Add(WrongAnswersHeaderLabel);
-            Panel1.Controls.Add(new LiteralControl("<br />"));
-            Panel1.Controls.Add(new LiteralControl("<br />"));
+
+            TheScore.InnerText = RightAnswerList.Count.ToString();
+
             //gets all the wrong answers
             foreach (int Answer in WrongAnswerList)
             {
@@ -99,29 +90,23 @@ namespace Obligatorisk3
                 AnswerLabel3.Text = "3:" + " " + Answer3;
                 CorrectAnswerLabel.Text = "Riktig svar:" + " " + CorrectAnswer;
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
+                CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                Panel1.Controls.Add(NewQuestionLabel);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel1);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel2);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel3);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(CorrectAnswerLabel);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(NewQuestionLabel);
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(AnswerLabel1);
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(AnswerLabel2);
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(AnswerLabel3);
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(CorrectAnswerLabel);
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
+                WrongResults.Controls.Add(new LiteralControl("<br />"));
 
                 con.Close();
             }
-            //Sets header over the wrong answers
-            Label RightAnswersHeaderLabel = new Label();
-            RightAnswersHeaderLabel.Text = "Du svarte riktig på disse spørsmålene";
-            RightAnswersHeaderLabel.Font.Size = 16;
-            RightAnswersHeaderLabel.Font.Bold = true;
-            Panel1.Controls.Add(RightAnswersHeaderLabel);
-            Panel1.Controls.Add(new LiteralControl("<br />"));
-            Panel1.Controls.Add(new LiteralControl("<br />"));
+
             //gets all the right answers
             foreach (int Answer in RightAnswerList)
             {
@@ -153,21 +138,24 @@ namespace Obligatorisk3
                 AnswerLabel3.Text = "3:" + " " + Answer3;
                 CorrectAnswerLabel.Text = "Riktig svar:" + " " + CorrectAnswer;
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
+                CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                Panel1.Controls.Add(NewQuestionLabel);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel1);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel2);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(AnswerLabel3);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(CorrectAnswerLabel);
-                Panel1.Controls.Add(new LiteralControl("<br />"));
-                Panel1.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(NewQuestionLabel);
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(AnswerLabel1);
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(AnswerLabel2);
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(AnswerLabel3);
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(CorrectAnswerLabel);
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                CorrectResults.Controls.Add(new LiteralControl("<br />"));
 
                 con.Close();
             }
+
+            ResultsWrapper.Style["display"] = "block";
         }
 
         /** 
@@ -221,23 +209,16 @@ namespace Obligatorisk3
 
         protected void Button1_Click(object sender, EventArgs e)
         {
-            string sth = Answers.SelectedValue;
-<<<<<<< HEAD
-            
-=======
-
-            //If correct answer
-            if (sth == "Answer4")
+            string sth = Answers.SelectedValue; // get the current selected value from radio button list
+            if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                RightAnswerList.Add(CurrentAskedQuestion);
+                RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
             }
-            //If correct answer
-            if (sth != "Answer4")
+            else
             {
-                WrongAnswerList.Add(CurrentAskedQuestion);
+                WrongAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of wrong answers
             }
 
->>>>>>> 2a30c3e856cbe190beda677efe29f7a147d0d995
             Answers.Items.Clear();
             QuestionText.Text = "";
 
@@ -245,29 +226,37 @@ namespace Obligatorisk3
             {
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
-                Button1.Enabled = false;
+                Button1.Visible = false;
+                Button2.Visible = true;
+                Button3.Visible = true;
                 return;
             }
 
             CurrentQuestion++;
-            Session["CurrentPage"] = CurrentQuestion;
-<<<<<<< HEAD
 
-            System.Diagnostics.Debug.WriteLine("Answers.SelectedValue" + sth);
-
-            if (sth == "Answer4")
-            {
-                QuestionText.ForeColor = System.Drawing.Color.Olive;
+            if (CurrentQuestion == MaxAmountOfQuestions) {
+                Button1.Text = "Se resultater";
             }
 
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
-            DrawQuestion();
-=======
+            Session["CurrentPage"] = CurrentQuestion;
 
-            DrawQuestion();
             PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
-            QuestionText.Text += sth;
->>>>>>> 2a30c3e856cbe190beda677efe29f7a147d0d995
+            DrawQuestion();
+        }
+
+        // Handling "new quiz" button
+        protected void Button2_Click(object sender, EventArgs e)
+        {
+            Session["CurrentPage"] = null;
+            Button1.Visible = true;
+            Button2.Visible = false;
+            Button3.Visible = false;
+            Response.Redirect(Request.RawUrl); // reloads the page
+        }
+
+        protected void Button3_Click(object sender, EventArgs e)
+        {
+            // save score to highscore table
         }
     }
 }

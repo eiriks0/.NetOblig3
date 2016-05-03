@@ -16,12 +16,30 @@
                 </div>
                 <div id="QuestionBody" class="panel-body">
                     <div class="row question-wrapper">
+                        <div id="ResultsWrapper" class="col-md-12" runat="server" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4>Poengsum: <span runat="server" id="TheScore"></span></h4>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-6" runat="server">
+                                    <h4 id="WrongResultsHeader">Du svarte feil på disse spørsmålene:</h4>
+                                    <div id="WrongResults" runat="server"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4 id="CorrectResultsHeader">Du svarte riktig på disse spørsmålene:</h4>
+                                    <div id="CorrectResults" runat="server"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-8">
                             <p class="question-title">
                                 <asp:Label runat="server" ID="QuestionText"></asp:Label>
                             </p>
                             <asp:RadioButtonList runat="server" ID="Answers"></asp:RadioButtonList>
-                                    <asp:Panel runat="server" ID="Panel1"></asp:Panel>
+                            <asp:Panel runat="server" ID="Panel1"></asp:Panel>
                         </div>
                         <div class="col-md-4">
                             <asp:Image ID="TrafficQuestionImage" CssClass="question-image" runat="server" />
@@ -30,7 +48,9 @@
                     
                     <div class="row">
                         <div class="col-md-12">
-                            <asp:Button ID="Button1" runat="server" CssClass="btn btn-success btn-lg" OnClick="Button1_Click" Text="Neste spørsmål" />
+                            <asp:Button ID="Button1" runat="server" CssClass="btn btn-success btn-lg" OnClick="Button1_Click" Text="Neste spørsmål" Visible="true" />
+                            <asp:Button ID="Button2" runat="server" CssClass="btn btn-success btn-lg" OnClick="Button2_Click" Text="Start om igjen?" Visible="false" />
+                            <asp:Button ID="Button3" runat="server" CssClass="btn btn-primary btn-lg" OnClick="Button3_Click" Text="Lagre poengsum" Visible="false" />
                         </div>
                     </div>
                 </div>
