@@ -215,6 +215,16 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Login.aspx" />
     <Content Include="Manager.aspx" />
+    <Content Include="Pictures\10.jpg" />
+    <Content Include="Pictures\12.jpg" />
+    <Content Include="Pictures\14.jpg" />
+    <Content Include="Pictures\15.jpg" />
+    <Content Include="Pictures\16.jpg" />
+    <Content Include="Pictures\2.jpg" />
+    <Content Include="Pictures\5.jpg" />
+    <Content Include="Pictures\6.jpg" />
+    <Content Include="Pictures\7.jpg" />
+    <Content Include="Pictures\8.jpg" />
     <Content Include="Pictures\klasse_b_slutt.jpg" />
     <Content Include="Pictures\vei.jpg" />
     <Content Include="Registrering.aspx" />
