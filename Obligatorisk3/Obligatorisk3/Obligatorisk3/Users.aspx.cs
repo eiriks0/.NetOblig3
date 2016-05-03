@@ -228,9 +228,11 @@ namespace Obligatorisk3 {
             string sth = Answers.SelectedValue; // get the current selected value from radio button list
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
+               // RightAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of correct answers
+                Answered.Add("CorrectAns");
             } else {
-                WrongAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of wrong answers
+                //WrongAnswerList.Add(CurrentAskedQuestion); // Add the id of the question to the array of wrong answers
+                Answered.Add(sth);
             }
 
             Answers.Items.Clear();
