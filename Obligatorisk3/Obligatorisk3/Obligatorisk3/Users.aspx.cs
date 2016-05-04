@@ -27,11 +27,12 @@ namespace Obligatorisk3 {
 
         protected double numOfQuestionsToAsk = 5; // The amount of questions to ask.
 
-        public static string _Answered; // Not sure what this does?
-
+        // List for storing the user's answers to the questions.
         public static List<KeyValuePair<int, bool>> userAnswers = new List<KeyValuePair<int, bool>>();
 
-        public static List<string> Answered = new List<string>();
+        public static string _Answered; // Not sure what this does
+
+        public static List<string> Answered = new List<string>(); // Not sure what this does
 
         protected void Page_Load(object sender, EventArgs e) {
             if (Session["New"] == null) {
