@@ -12,6 +12,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace Obligatorisk3 {
     public partial class Users : System.Web.UI.Page {
@@ -21,9 +22,9 @@ namespace Obligatorisk3 {
         SqlDataReader sqlReader;
         string queryString;
         
-        protected int currentQuestionID; // ID of the currently asked question.
+        protected static int currentQuestionID; // ID of the currently asked question.
 
-        protected double numOfAskedQuestions; // Number of questions asked thus far.
+        protected static double numOfAskedQuestions = 0.0; // Number of questions asked thus far.
 
         protected double numOfQuestionsToAsk = 5; // The amount of questions to ask.
 
@@ -34,20 +35,63 @@ namespace Obligatorisk3 {
 
         public static List<string> Answered = new List<string>(); // Not sure what this does
 
+        private static bool isFirstLoad = true;
+
+        private static int NUM_QUESTIONS_IN_DB = 30;
+
+        private static List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
+
         protected void Page_Load(object sender, EventArgs e) {
             if (Session["New"] == null) {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            if (Session["CurrentPage"] == null) {
-                Session["CurrentPage"] = 1.0;
-            }
+            if (isFirstLoad) {
+                // Populate list with question IDs
+                questionIDs.Clear();
+                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++) {
+                    questionIDs.Add(i);
+                }
 
-            numOfAskedQuestions = Convert.ToDouble(Session["CurrentPage"]);
+                // Draw the initial question
+                DrawQuestion();
+
+                isFirstLoad = false;
+            }  
+        }
+
+        private void updateProgress() {
+            // Update the progress bar
             PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
 
-            DrawQuestion();
+            // Update the progress counter (x/y)
+            QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
+
+            // Update button text if needed
+            if(numOfAskedQuestions == numOfQuestionsToAsk) {
+                Button1.Text = "Se resultater";
+            }
+        }
+
+        private void resetData() {
+            isFirstLoad = true;
+            numOfAskedQuestions = 0.0;
+        }
+
+        /**
+        * Returns a random question ID from the questionIDs list,
+        * then removes the returned ID from the list.
+        * This ensures that all IDs returned from this method is unique.
+        */
+        private int getUniqueQuestionID() {
+            int index = new Random().Next(0, questionIDs.Count());
+            int questionIdToReturn = questionIDs[index];
+            questionIDs.RemoveAt(index);
+
+            Debug.WriteLine("getUniqueQuestionID() >> Returning ID: " + questionIdToReturn);
+
+            return questionIdToReturn;
         }
 
         /** 
@@ -59,6 +103,8 @@ namespace Obligatorisk3 {
             sqlConnection.Open();
 
             foreach (KeyValuePair<int, bool> userAnswer in userAnswers) {
+                Debug.WriteLine("DisplayAnswers() >> in foreach userAnswers >> userAnswer.Key: " + userAnswer.Key + " usrAnswrBool: " + userAnswer.Value.ToString());
+
                 queryString = "SELECT * FROM Quiz WHERE QuestionId=" + userAnswer.Key;
                 sqlCommand = new SqlCommand(queryString, sqlConnection);
                 sqlReader = sqlCommand.ExecuteReader();
@@ -126,10 +172,13 @@ namespace Obligatorisk3 {
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
          */
         private void DrawQuestion() {
+            numOfAskedQuestions++;
+            updateProgress();
+
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
 
-            currentQuestionID = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
+            currentQuestionID = getUniqueQuestionID();
 
             sqlConnection.Open();
             queryString = "SELECT * FROM Quiz WHERE QuestionId=" + currentQuestionID;
@@ -156,18 +205,21 @@ namespace Obligatorisk3 {
             }
 
             QuestionText.Text = sqlReader["Question"].ToString();
-            QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
             sqlConnection.Close();
         }
 
         protected void B_Logout_Click(object sender, EventArgs e) {
+            //TODO: Clear all data in this class.
+
             Session["New"] = null;
             Response.Redirect("Login.aspx");
         }
 
         protected void Button1_Click(object sender, EventArgs e) {
+            Debug.WriteLine("Button1_Click() >> currentQuestionID: " + currentQuestionID);
 
+            // Handle user answer
             string currSelectedRadioValue = Answers.SelectedValue; // get the current selected value from radio button list
 
             if (currSelectedRadioValue == "Answer4") // we know that the value "answer4" contains the correct question text
@@ -182,7 +234,10 @@ namespace Obligatorisk3 {
             Answers.Items.Clear();
             QuestionText.Text = "";
 
+            // If the user has answered the final question, show results and return.
             if (numOfAskedQuestions >= numOfQuestionsToAsk) {
+                resetData();
+
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Visible = false;
@@ -191,21 +246,16 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            numOfAskedQuestions++;
-
-            if (numOfAskedQuestions == numOfQuestionsToAsk) {
-                Button1.Text = "Se resultater";
-            }
-
-            Session["CurrentPage"] = numOfAskedQuestions;
-
-            PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
+            updateProgress();
             DrawQuestion();
         }
 
         // Handling "new quiz" button
         protected void Button2_Click(object sender, EventArgs e) {
-            Session["CurrentPage"] = null;
+            //Session["CurrentPage"] = null;
+            isFirstLoad = true;
+            numOfAskedQuestions = 0.0;
+
             Answered.Clear();
             userAnswers.Clear();
             Button1.Visible = true;
