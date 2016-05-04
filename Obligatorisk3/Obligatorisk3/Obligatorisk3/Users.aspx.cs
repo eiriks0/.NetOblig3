@@ -19,7 +19,6 @@ namespace Obligatorisk3 {
         string str;
         SqlCommand com;
 
-        protected static int QuestionsAnswered = 0;
         protected int CurrentAskedQuestion;
         protected double CurrentQuestion;
         protected double MaxAmountOfQuestions = 10;
