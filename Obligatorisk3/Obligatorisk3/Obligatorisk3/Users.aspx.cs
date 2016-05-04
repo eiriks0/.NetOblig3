@@ -15,17 +15,17 @@ using System.Data.SqlClient;
 
 namespace Obligatorisk3 {
     public partial class Users : System.Web.UI.Page {
-        string strConnString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
-        string str;
-        SqlCommand com;
+        string sqlConnectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
+        string queryString;
+        SqlCommand sqlCommand;
 
-        protected int CurrentAskedQuestion;
-        protected double CurrentQuestion;
-        protected double MaxAmountOfQuestions = 10;
-        public static List<int> Questions = new List<int>();
-        public static List<int> RightAnswerList = new List<int>();
-        public static List<int> WrongAnswerList = new List<int>();
-        public static string _Answered;
+        protected int currentQuestionID; // ID of the currently asked question.
+
+        protected double numOfAskedQuestions; // Number of questions asked thus far.
+
+        protected double numOfQuestionsToAsk = 5; // The amount of questions to ask.
+
+        public static string _Answered; // Not sure what this does?
 
         public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
 
@@ -41,8 +41,8 @@ namespace Obligatorisk3 {
                 Session["CurrentPage"] = 1.0;
             }
 
-            CurrentQuestion = Convert.ToDouble(Session["CurrentPage"]);
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+            numOfAskedQuestions = Convert.ToDouble(Session["CurrentPage"]);
+            PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
 
             DrawQuestion();
         }
@@ -54,20 +54,16 @@ namespace Obligatorisk3 {
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
 
-            TheScore.InnerText = RightAnswerList.Count.ToString();
-
-
+            SqlConnection con = new SqlConnection(sqlConnectionString);
+            SqlDataReader reader;
+            con.Open();
 
             foreach (KeyValuePair<int, bool> Answers in AnswerList) {
-
-
-
-                SqlConnection con = new SqlConnection(strConnString);
-                con.Open();
-                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
-                com = new SqlCommand(str, con);
-                SqlDataReader reader = com.ExecuteReader();
+                queryString = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
+                sqlCommand = new SqlCommand(queryString, con);
+                reader = sqlCommand.ExecuteReader();
                 reader.Read();
+
                 string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
 
                 string question = reader["Question"].ToString();
@@ -120,8 +116,10 @@ namespace Obligatorisk3 {
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                con.Close();
-            }
+                reader.Close();
+            }//-end foreach
+
+            con.Close();
 
             ResultsWrapper.Style["display"] = "block";
         }
@@ -133,13 +131,13 @@ namespace Obligatorisk3 {
         private void DrawQuestion() {
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
-            CurrentAskedQuestion = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
+            currentQuestionID = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
 
-            SqlConnection con = new SqlConnection(strConnString);
+            SqlConnection con = new SqlConnection(sqlConnectionString);
             con.Open();
-            str = "SELECT * FROM Quiz WHERE QuestionId=" + CurrentAskedQuestion;
-            com = new SqlCommand(str, con);
-            SqlDataReader reader = com.ExecuteReader();
+            queryString = "SELECT * FROM Quiz WHERE QuestionId=" + currentQuestionID;
+            sqlCommand = new SqlCommand(queryString, con);
+            SqlDataReader reader = sqlCommand.ExecuteReader();
             reader.Read();
 
             RadioButton[] rbuttons = new RadioButton[4];
@@ -161,7 +159,7 @@ namespace Obligatorisk3 {
             }
 
             QuestionText.Text = reader["Question"].ToString();
-            QuestionCounter.Text = CurrentQuestion.ToString() + "/" + MaxAmountOfQuestions.ToString();
+            QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
             con.Close();
         }
@@ -177,17 +175,17 @@ namespace Obligatorisk3 {
 
             if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
                 Answered.Add("CorrectAns");
             } else {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
+                AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
                 Answered.Add(sth);
             }
 
             Answers.Items.Clear();
             QuestionText.Text = "";
 
-            if (CurrentQuestion >= MaxAmountOfQuestions) {
+            if (numOfAskedQuestions >= numOfQuestionsToAsk) {
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Visible = false;
@@ -196,15 +194,15 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            CurrentQuestion++;
+            numOfAskedQuestions++;
 
-            if (CurrentQuestion == MaxAmountOfQuestions) {
+            if (numOfAskedQuestions == numOfQuestionsToAsk) {
                 Button1.Text = "Se resultater";
             }
 
-            Session["CurrentPage"] = CurrentQuestion;
+            Session["CurrentPage"] = numOfAskedQuestions;
 
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+            PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
             DrawQuestion();
         }
 
