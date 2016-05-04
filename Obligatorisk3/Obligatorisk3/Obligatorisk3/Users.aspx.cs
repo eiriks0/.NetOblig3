@@ -170,15 +170,15 @@ namespace Obligatorisk3 {
 
         protected void Button1_Click(object sender, EventArgs e) {
 
-            string sth = Answers.SelectedValue; // get the current selected value from radio button list
+            string currSelectedRadioValue = Answers.SelectedValue; // get the current selected value from radio button list
 
-            if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
+            if (currSelectedRadioValue == "Answer4") // we know that the value "answer4" contains the correct question text
             {
                 AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
                 Answered.Add("CorrectAns");
             } else {
                 AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
-                Answered.Add(sth);
+                Answered.Add(currSelectedRadioValue);
             }
 
             Answers.Items.Clear();
