@@ -47,7 +47,7 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            if (isFirstLoad) {
+            if(isFirstLoad) {
                 // Populate list with question IDs
                 questionIDs.Clear();
                 for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++) {
@@ -61,22 +61,28 @@ namespace Obligatorisk3 {
             }  
         }
 
+        /**
+        * Method for updating the progressbar, progress-counter-text and the button text.
+        */
         private void updateProgress() {
-            // Update the progress bar
             PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
 
-            // Update the progress counter (x/y)
             QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
-            // Update button text if needed
             if(numOfAskedQuestions == numOfQuestionsToAsk) {
                 Button1.Text = "Se resultater";
             }
         }
 
+        /**
+        * Method for resetting the data on this page.
+        */
         private void resetData() {
             isFirstLoad = true;
             numOfAskedQuestions = 0.0;
+            _Answered = null;
+            Answered = new List<string>();
+            questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
         }
 
         /**
@@ -175,9 +181,6 @@ namespace Obligatorisk3 {
             numOfAskedQuestions++;
             updateProgress();
 
-            Random rnd = new Random();
-            Random rndQuestionOrder = new Random();
-
             currentQuestionID = getUniqueQuestionID();
 
             sqlConnection.Open();
@@ -189,7 +192,7 @@ namespace Obligatorisk3 {
             RadioButton[] rbuttons = new RadioButton[4];
 
             string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next()).ToArray();
+            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => new Random().Next()).ToArray();
 
             for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
                 ListItem li = new ListItem();
@@ -210,7 +213,7 @@ namespace Obligatorisk3 {
         }
 
         protected void B_Logout_Click(object sender, EventArgs e) {
-            //TODO: Clear all data in this class.
+            resetData();
 
             Session["New"] = null;
             Response.Redirect("Login.aspx");
