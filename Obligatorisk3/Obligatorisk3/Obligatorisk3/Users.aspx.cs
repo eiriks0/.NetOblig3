@@ -126,19 +126,18 @@ namespace Obligatorisk3 {
 
         /** 
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
-         * 
-          */
+         */
         private void DrawQuestion() {
             Random rnd = new Random();
             Random rndQuestionOrder = new Random();
+
             currentQuestionID = rnd.Next(1, 31); //Generere random int mellom 1 og 17 (18 er ikke med).
 
-            SqlConnection con = new SqlConnection(sqlConnectionString);
-            con.Open();
+            sqlConnection.Open();
             queryString = "SELECT * FROM Quiz WHERE QuestionId=" + currentQuestionID;
-            sqlCommand = new SqlCommand(queryString, con);
-            SqlDataReader reader = sqlCommand.ExecuteReader();
-            reader.Read();
+            sqlCommand = new SqlCommand(queryString, sqlConnection);
+            sqlReader = sqlCommand.ExecuteReader();
+            sqlReader.Read();
 
             RadioButton[] rbuttons = new RadioButton[4];
 
@@ -147,21 +146,21 @@ namespace Obligatorisk3 {
 
             for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
                 ListItem li = new ListItem();
-                li.Text = reader[sqlDataReaderKeys[i]].ToString();
+                li.Text = sqlReader[sqlDataReaderKeys[i]].ToString();
                 li.Value = (sqlDataReaderKeys[i] == "CorrectAns") ? "Answer4" : sqlDataReaderKeys[i];
                 li.Selected = (i == 0) ? true : false;
 
                 Answers.Items.Add(li);
             }
 
-            if (reader["Picture"] != null) {
-                TrafficQuestionImage.ImageUrl = reader["Picture"].ToString();
+            if (sqlReader["Picture"] != null) {
+                TrafficQuestionImage.ImageUrl = sqlReader["Picture"].ToString();
             }
 
-            QuestionText.Text = reader["Question"].ToString();
+            QuestionText.Text = sqlReader["Question"].ToString();
             QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
-            con.Close();
+            sqlConnection.Close();
         }
 
         protected void B_Logout_Click(object sender, EventArgs e) {
