@@ -64,8 +64,6 @@ namespace Obligatorisk3 {
                 sqlReader = sqlCommand.ExecuteReader();
                 sqlReader.Read();
 
-                string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-
                 string question = sqlReader["Question"].ToString();
                 string Answer1 = sqlReader["Answer"].ToString();
                 string Answer2 = sqlReader["Anwer2"].ToString();
