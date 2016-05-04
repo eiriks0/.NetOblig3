@@ -80,9 +80,6 @@ namespace Obligatorisk3 {
         private void resetData() {
             isFirstLoad = true;
             numOfAskedQuestions = 0.0;
-            _Answered = null;
-            Answered = new List<string>();
-            questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
         }
 
         /**
