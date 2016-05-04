@@ -142,7 +142,7 @@ namespace Obligatorisk3 {
             RadioButton[] rbuttons = new RadioButton[4];
 
             string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next()).ToArray();
+            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next(0, sqlDataReaderKeys.Length)).ToArray();
 
             for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
                 ListItem li = new ListItem();
