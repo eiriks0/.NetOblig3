@@ -15,10 +15,12 @@ using System.Data.SqlClient;
 
 namespace Obligatorisk3 {
     public partial class Users : System.Web.UI.Page {
-        string sqlConnectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
-        string queryString;
+        static string sqlConnectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
+        SqlConnection sqlConnection = new SqlConnection(sqlConnectionString);
         SqlCommand sqlCommand;
-
+        SqlDataReader sqlReader;
+        string queryString;
+        
         protected int currentQuestionID; // ID of the currently asked question.
 
         protected double numOfAskedQuestions; // Number of questions asked thus far.
@@ -54,23 +56,21 @@ namespace Obligatorisk3 {
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
 
-            SqlConnection con = new SqlConnection(sqlConnectionString);
-            SqlDataReader reader;
-            con.Open();
+            sqlConnection.Open();
 
             foreach (KeyValuePair<int, bool> Answers in AnswerList) {
                 queryString = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
-                sqlCommand = new SqlCommand(queryString, con);
-                reader = sqlCommand.ExecuteReader();
-                reader.Read();
+                sqlCommand = new SqlCommand(queryString, sqlConnection);
+                sqlReader = sqlCommand.ExecuteReader();
+                sqlReader.Read();
 
                 string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
 
-                string question = reader["Question"].ToString();
-                string Answer1 = reader["Answer"].ToString();
-                string Answer2 = reader["Anwer2"].ToString();
-                string Answer3 = reader["Anwer3"].ToString();
-                string CorrectAnswer = reader["CorrectAns"].ToString();
+                string question = sqlReader["Question"].ToString();
+                string Answer1 = sqlReader["Answer"].ToString();
+                string Answer2 = sqlReader["Anwer2"].ToString();
+                string Answer3 = sqlReader["Anwer3"].ToString();
+                string CorrectAnswer = sqlReader["CorrectAns"].ToString();
 
                 Label NewQuestionLabel = new Label();
                 Label AnswerLabel1 = new Label();
@@ -89,7 +89,7 @@ namespace Obligatorisk3 {
                 CorrectAnswerLabel.Style["font-weight"] = "900";
 
                 _Answered = Answered[AnswerList.IndexOf(Answers)];
-                string WrongAnswer = reader[_Answered].ToString();
+                string WrongAnswer = sqlReader[_Answered].ToString();
 
                 if (!Answers.Value) {
                     AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
@@ -116,10 +116,10 @@ namespace Obligatorisk3 {
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                reader.Close();
+                sqlReader.Close();
             }//-end foreach
 
-            con.Close();
+            sqlConnection.Close();
 
             ResultsWrapper.Style["display"] = "block";
         }
