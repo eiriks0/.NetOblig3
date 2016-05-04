@@ -51,8 +51,7 @@ namespace Obligatorisk3 {
 
         /** 
         * Generates labels based on the ints saved in the WrongAnswerList
-        * 
-         */
+        */
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
 
