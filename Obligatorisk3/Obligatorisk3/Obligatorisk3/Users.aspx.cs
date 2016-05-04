@@ -12,25 +12,34 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace Obligatorisk3 {
     public partial class Users : System.Web.UI.Page {
-        string strConnString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
-        string str;
-        SqlCommand com;
+        static string sqlConnectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
+        SqlConnection sqlConnection = new SqlConnection(sqlConnectionString);
+        SqlCommand sqlCommand;
+        SqlDataReader sqlReader;
+        string queryString;
+        
+        protected static int currentQuestionID; // ID of the currently asked question.
 
-        protected static int MaxQuestions = 5;
-        protected static int QuestionsAnswered = 0;
-        protected int CurrentAskedQuestion;
-        protected double CurrentQuestion;
-        protected double MaxAmountOfQuestions = 10;
-        public static List<int> Questions = new List<int>();
-        public static string _Answered;
-        public static int TotalScore = -1;
+        protected static double numOfAskedQuestions = 0.0; // Number of questions asked thus far.
 
-        public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
+        protected double numOfQuestionsToAsk = 5; // The amount of questions to ask.
 
-        public static List<string> Answered = new List<string>();
+        // List for storing the user's answers to the questions.
+        public static List<KeyValuePair<int, bool>> userAnswers = new List<KeyValuePair<int, bool>>();
+
+        public static string _Answered; // Not sure what this does
+
+        public static List<string> Answered = new List<string>(); // Not sure what this does
+
+        private static bool isFirstLoad = true;
+
+        private static int NUM_QUESTIONS_IN_DB = 30;
+
+        private static List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
 
         protected void Page_Load(object sender, EventArgs e) {
             if (Session["New"] == null) {
@@ -38,38 +47,77 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            if (Session["CurrentPage"] == null) {
-                Session["CurrentPage"] = 1.0;
+            if(isFirstLoad) {
+                // Populate list with question IDs
+                questionIDs.Clear();
+                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++) {
+                    questionIDs.Add(i);
+                }
+
+                // Draw the initial question
+                DrawQuestion();
+
+                isFirstLoad = false;
+            }  
+        }
+
+        /**
+        * Method for updating the progressbar, progress-counter-text and the button text.
+        */
+        private void updateProgress() {
+            PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
+
+            QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
+
+            if(numOfAskedQuestions == numOfQuestionsToAsk) {
+                Button1.Text = "Se resultater";
             }
+        }
 
-            CurrentQuestion = Convert.ToDouble(Session["CurrentPage"]);
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+        /**
+        * Method for resetting the data on this page.
+        */
+        private void resetData() {
+            isFirstLoad = true;
+            numOfAskedQuestions = 0.0;
+        }
 
-            DrawQuestion();
+        /**
+        * Returns a random question ID from the questionIDs list,
+        * then removes the returned ID from the list.
+        * This ensures that all IDs returned from this method is unique.
+        */
+        private int getUniqueQuestionID() {
+            int index = new Random().Next(0, questionIDs.Count());
+            int questionIdToReturn = questionIDs[index];
+            questionIDs.RemoveAt(index);
+
+            Debug.WriteLine("getUniqueQuestionID() >> Returning ID: " + questionIdToReturn);
+
+            return questionIdToReturn;
         }
 
         /** 
         * Generates labels based on the ints saved in the WrongAnswerList
-        * 
-         */
+        */
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
 
-            foreach (KeyValuePair<int, bool> Answer in AnswerList) {
+            sqlConnection.Open();
 
-                SqlConnection con = new SqlConnection(strConnString);
-                con.Open();
-                str = "SELECT * FROM Quiz WHERE QuestionId=" + Answer.Key;
-                com = new SqlCommand(str, con);
-                SqlDataReader reader = com.ExecuteReader();
-                reader.Read();
-                string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
+            foreach (KeyValuePair<int, bool> userAnswer in userAnswers) {
+                Debug.WriteLine("DisplayAnswers() >> in foreach userAnswers >> userAnswer.Key: " + userAnswer.Key + " usrAnswrBool: " + userAnswer.Value.ToString());
 
-                string question = reader["Question"].ToString();
-                string Answer1 = reader["Answer"].ToString();
-                string Answer2 = reader["Anwer2"].ToString();
-                string Answer3 = reader["Anwer3"].ToString();
-                string CorrectAnswer = reader["CorrectAns"].ToString();
+                queryString = "SELECT * FROM Quiz WHERE QuestionId=" + userAnswer.Key;
+                sqlCommand = new SqlCommand(queryString, sqlConnection);
+                sqlReader = sqlCommand.ExecuteReader();
+                sqlReader.Read();
+
+                string question = sqlReader["Question"].ToString();
+                string Answer1 = sqlReader["Answer"].ToString();
+                string Answer2 = sqlReader["Anwer2"].ToString();
+                string Answer3 = sqlReader["Anwer3"].ToString();
+                string CorrectAnswer = sqlReader["CorrectAns"].ToString();
 
                 Label NewQuestionLabel = new Label();
                 Label AnswerLabel1 = new Label();
@@ -87,10 +135,10 @@ namespace Obligatorisk3 {
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
                 CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                _Answered = Answered[AnswerList.IndexOf(Answer)];
-                string WrongAnswer = reader[_Answered].ToString();
+                _Answered = Answered[userAnswers.IndexOf(userAnswer)];
+                string WrongAnswer = sqlReader[_Answered].ToString();
 
-                if (!Answer.Value) {
+                if (!userAnswer.Value) {
                     AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
                     AnswerLabel1.ForeColor = System.Drawing.Color.Red;
                     WrongResults.Controls.Add(NewQuestionLabel);
@@ -101,8 +149,7 @@ namespace Obligatorisk3 {
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                if (Answer.Value) {
-                    TotalScore = (TotalScore == -1) ? 1 : TotalScore + 1;
+                if (userAnswer.Value) {
                     CorrectResults.Controls.Add(NewQuestionLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                     CorrectResults.Controls.Add(AnswerLabel1);
@@ -115,77 +162,83 @@ namespace Obligatorisk3 {
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                TheScore.InnerText = TotalScore.ToString();
+                sqlReader.Close();
+            }//-end foreach
 
-                con.Close();
-            }
+            sqlConnection.Close();
 
             ResultsWrapper.Style["display"] = "block";
         }
 
         /** 
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
-         * 
-          */
+         */
         private void DrawQuestion() {
-            Random rnd = new Random();
-            Random rndQuestionOrder = new Random();
-            CurrentAskedQuestion = rnd.Next(1, 21); //Generere random int mellom 1 og 20 (eksklusiv).
 
-            SqlConnection con = new SqlConnection(strConnString);
-            con.Open();
-            str = "SELECT * FROM Quiz WHERE QuestionId=" + CurrentAskedQuestion;
-            com = new SqlCommand(str, con);
-            SqlDataReader reader = com.ExecuteReader();
-            reader.Read();
+            numOfAskedQuestions++;
+            updateProgress();
+
+            currentQuestionID = getUniqueQuestionID();
+
+            sqlConnection.Open();
+            queryString = "SELECT * FROM Quiz WHERE QuestionId=" + currentQuestionID;
+            sqlCommand = new SqlCommand(queryString, sqlConnection);
+            sqlReader = sqlCommand.ExecuteReader();
+            sqlReader.Read();
 
             RadioButton[] rbuttons = new RadioButton[4];
 
             string[] sqlDataReaderKeys = new string[4] { "Answer", "Anwer2", "Anwer3", "CorrectAns" };
-            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => rnd.Next(0, sqlDataReaderKeys.Length)).ToArray();
+
+            sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => new Random().Next()).ToArray();
 
             for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
                 ListItem li = new ListItem();
-                li.Text = reader[sqlDataReaderKeys[i]].ToString();
+                li.Text = sqlReader[sqlDataReaderKeys[i]].ToString();
                 li.Value = (sqlDataReaderKeys[i] == "CorrectAns") ? "Answer4" : sqlDataReaderKeys[i];
                 li.Selected = (i == 0) ? true : false;
 
                 Answers.Items.Add(li);
             }
 
-            if (reader["Picture"] != null) {
-                TrafficQuestionImage.ImageUrl = reader["Picture"].ToString();
+            if (sqlReader["Picture"] != null) {
+                TrafficQuestionImage.ImageUrl = sqlReader["Picture"].ToString();
             }
 
-            QuestionText.Text = reader["Question"].ToString();
-            QuestionCounter.Text = CurrentQuestion.ToString() + "/" + MaxAmountOfQuestions.ToString();
+            QuestionText.Text = sqlReader["Question"].ToString();
 
-            con.Close();
+            sqlConnection.Close();
         }
 
         protected void B_Logout_Click(object sender, EventArgs e) {
+            resetData();
+
             Session["New"] = null;
             Response.Redirect("Login.aspx");
         }
 
         protected void Button1_Click(object sender, EventArgs e) {
+            Debug.WriteLine("Button1_Click() >> currentQuestionID: " + currentQuestionID);
 
-            string sth = Answers.SelectedValue; // get the current selected value from radio button list
+            // Handle user answer
+            string currSelectedRadioValue = Answers.SelectedValue; // get the current selected value from radio button list
 
-            if (sth == "Answer4") // we know that the value "answer4" contains the correct question text
-                                  // because the database design is not very good.... JUNE!!!!!!!!!!!!!
+            if (currSelectedRadioValue == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                AnswerList.Add(new KeyValuePair<int, bool>(CurrentAskedQuestion, true));
+                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
                 Answered.Add("CorrectAns");
             } else {
-                AnswerList.Add(new KeyValuePair<int, bool>(CurrentAskedQuestion, false));
-                Answered.Add(sth);
+                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
+                Answered.Add(currSelectedRadioValue);
             }
 
             Answers.Items.Clear();
             QuestionText.Text = "";
 
-            if (CurrentQuestion >= MaxAmountOfQuestions) {
+            // If the user has answered the final question, show results and return.
+            if (numOfAskedQuestions >= numOfQuestionsToAsk) {
+                resetData();
+
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Visible = false;
@@ -194,23 +247,18 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            CurrentQuestion++;
-
-            if (CurrentQuestion == MaxAmountOfQuestions) {
-                Button1.Text = "Se resultater";
-            }
-
-            Session["CurrentPage"] = CurrentQuestion;
-
-            PanelProgressbar.Style["width"] = (CurrentQuestion / MaxAmountOfQuestions) * 100 + "%";
+            updateProgress();
             DrawQuestion();
         }
 
         // Handling "new quiz" button
         protected void Button2_Click(object sender, EventArgs e) {
-            Session["CurrentPage"] = null;
+            //Session["CurrentPage"] = null;
+            isFirstLoad = true;
+            numOfAskedQuestions = 0.0;
+
             Answered.Clear();
-            AnswerList.Clear();
+            userAnswers.Clear();
             Button1.Visible = true;
             Button2.Visible = false;
             Button3.Visible = false;
@@ -218,10 +266,6 @@ namespace Obligatorisk3 {
         }
 
         protected void Button3_Click(object sender, EventArgs e) {
-            if (TotalScore >= 0)
-            {
-
-            }
             // save score to highscore table
         }
     }
