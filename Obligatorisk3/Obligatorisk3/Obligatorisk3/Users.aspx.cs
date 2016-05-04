@@ -29,7 +29,7 @@ namespace Obligatorisk3 {
 
         public static string _Answered; // Not sure what this does?
 
-        public static List<KeyValuePair<int, bool>> AnswerList = new List<KeyValuePair<int, bool>>();
+        public static List<KeyValuePair<int, bool>> userAnswers = new List<KeyValuePair<int, bool>>();
 
         public static List<string> Answered = new List<string>();
 
@@ -57,8 +57,8 @@ namespace Obligatorisk3 {
 
             sqlConnection.Open();
 
-            foreach (KeyValuePair<int, bool> Answers in AnswerList) {
-                queryString = "SELECT * FROM Quiz WHERE QuestionId=" + Answers.Key;
+            foreach (KeyValuePair<int, bool> userAnswer in userAnswers) {
+                queryString = "SELECT * FROM Quiz WHERE QuestionId=" + userAnswer.Key;
                 sqlCommand = new SqlCommand(queryString, sqlConnection);
                 sqlReader = sqlCommand.ExecuteReader();
                 sqlReader.Read();
@@ -85,10 +85,10 @@ namespace Obligatorisk3 {
                 CorrectAnswerLabel.ForeColor = System.Drawing.Color.Green;
                 CorrectAnswerLabel.Style["font-weight"] = "900";
 
-                _Answered = Answered[AnswerList.IndexOf(Answers)];
+                _Answered = Answered[userAnswers.IndexOf(userAnswer)];
                 string WrongAnswer = sqlReader[_Answered].ToString();
 
-                if (!Answers.Value) {
+                if (!userAnswer.Value) {
                     AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
                     AnswerLabel1.ForeColor = System.Drawing.Color.Red;
                     WrongResults.Controls.Add(NewQuestionLabel);
@@ -100,7 +100,7 @@ namespace Obligatorisk3 {
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                if (Answers.Value) {
+                if (userAnswer.Value) {
                     CorrectResults.Controls.Add(NewQuestionLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                     CorrectResults.Controls.Add(AnswerLabel1);
@@ -171,10 +171,10 @@ namespace Obligatorisk3 {
 
             if (currSelectedRadioValue == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
+                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
                 Answered.Add("CorrectAns");
             } else {
-                AnswerList.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
+                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
                 Answered.Add(currSelectedRadioValue);
             }
 
@@ -206,7 +206,7 @@ namespace Obligatorisk3 {
         protected void Button2_Click(object sender, EventArgs e) {
             Session["CurrentPage"] = null;
             Answered.Clear();
-            AnswerList.Clear();
+            userAnswers.Clear();
             Button1.Visible = true;
             Button2.Visible = false;
             Button3.Visible = false;
