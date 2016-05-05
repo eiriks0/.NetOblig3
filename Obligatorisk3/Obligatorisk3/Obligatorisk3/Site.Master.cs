@@ -7,6 +7,7 @@ using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
+using Obligatorisk3.Models;
 
 namespace Obligatorisk3
 {
@@ -69,12 +70,16 @@ namespace Obligatorisk3
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (Session["UserData"] != null)
+            {
+                User user = (User)Session["UserData"];
+                UserName.InnerText = user.userName;
+            }
         }
 
         public void Click_LogOut(object sender, EventArgs e)
         {
-            Session["New"] = null;
+            Session["UserData"] = null;
             Response.Redirect("Default.aspx");
         }
 

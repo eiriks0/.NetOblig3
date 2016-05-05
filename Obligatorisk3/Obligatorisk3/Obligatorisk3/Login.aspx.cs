@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,16 +7,19 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Data;
+using Obligatorisk3.Models;
 
 namespace Obligatorisk3
 {
     public partial class Login : System.Web.UI.Page
     {
-        private bool errorToggled = false;
+        private SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString);
+        private SqlDataReader sqlDataReader;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["New"] != null)
+            if (Session["UserData"] != null)
             {
                 Response.Redirect("Default.aspx");
             }
@@ -25,46 +29,62 @@ namespace Obligatorisk3
 
         protected void Button_Login_Click(object sender, EventArgs e)
         {
-            SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString);
-            conn.Open();
-            string checkuser = "select count(*) from UserData where UserName= '" + TextBoxUserName.Text + "'";
-            SqlCommand com = new SqlCommand(checkuser, conn);
-            int temp = Convert.ToInt32(com.ExecuteScalar().ToString());
-            conn.Close();
-            if (temp == 1)
+
+            if (LogUserIn())
             {
-                conn.Open();
-                string checkPasswordQuery = "select password from UserData where UserName= '" + TextBoxUserName.Text + "'";
-                SqlCommand passComm = new SqlCommand(checkPasswordQuery, conn);
-                string password = passComm.ExecuteScalar().ToString().Replace(" ","");
-                if (password == TextBoxPassword.Text)
-                {
-                    Session["New"] = TextBoxUserName.Text;
+                User user = (User)Session["UserData"];
 
-                    if (TextBoxUserName.Text == "admin")
-                    {
-                        Response.Redirect("Manager.aspx");
-                        return;
-                    }
-
-                    Response.Redirect("Users.aspx");
-                }
-                else
+                if (user != null && user.isAdmin)
                 {
-                    errorToggled = true;
+                    Response.Redirect("Manager.aspx");
+                    return;
                 }
+
+                Response.Redirect("Users.aspx");
             }
             else
             {
-                errorToggled = true;
-            
-            }
-
-            if (errorToggled)
-            {
                 ShowUserNamePasswordErrorMessage();
             }
+            
         }
+
+        private bool LogUserIn()
+        {
+            connection.Open();
+
+            SqlCommand command = new SqlCommand(null, connection);
+            command.CommandText = 
+                "SELECT UserId, UserName, IsAdmin " +
+                "FROM UserData " +
+                "WHERE UserName = @UserName " + 
+                "AND Password = @Password";
+            SqlParameter userNameParam = new SqlParameter("@UserName", SqlDbType.VarChar, 20);
+            SqlParameter passWordParam = new SqlParameter("@Password", SqlDbType.VarChar, 20);
+            userNameParam.Value = TextBoxUserName.Text;
+            passWordParam.Value = TextBoxPassword.Text;
+
+            command.Parameters.Add(userNameParam);
+            command.Parameters.Add(passWordParam);
+            command.Prepare();
+
+            sqlDataReader = command.ExecuteReader();
+            sqlDataReader.Read();
+
+            if (sqlDataReader.HasRows)
+            {
+                User user = new User(sqlDataReader["UserName"].ToString(), int.Parse(sqlDataReader["UserId"].ToString()), bool.Parse(sqlDataReader["IsAdmin"].ToString() ));
+
+                HttpContext.Current.Session.Add("UserData", user);
+
+                return true;
+            }
+
+            connection.Close();
+
+            return false;
+        }
+
         private void ShowUserNamePasswordErrorMessage()
         {
 

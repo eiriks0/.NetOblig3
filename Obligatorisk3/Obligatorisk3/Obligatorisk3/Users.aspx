@@ -48,9 +48,9 @@
                     
                     <div class="row">
                         <div class="col-md-12">
-                            <asp:Button ID="Button1" runat="server" CssClass="btn btn-success btn-lg" OnClick="Button1_Click" Text="Neste spørsmål" Visible="true" />
-                            <asp:Button ID="Button2" runat="server" CssClass="btn btn-success btn-lg" OnClick="Button2_Click" Text="Start om igjen?" Visible="false" />
-                            <asp:Button ID="Button3" runat="server" CssClass="btn btn-primary btn-lg" OnClick="Button3_Click" Text="Lagre poengsum" Visible="false" />
+                            <asp:Button ID="Button1" runat="server" CssClass="btn btn-success btn-lg" OnClick="B_Next_Question" Text="Neste spørsmål" Visible="true" />
+                            <asp:Button ID="Button2" runat="server" CssClass="btn btn-success btn-lg" OnClick="B_New_Quiz" Text="Start om igjen?" Visible="false" />
+                            <asp:Button ID="Button3" runat="server" CssClass="btn btn-primary btn-lg" OnClick="B_Save_Highscore" Text="Lagre poengsum" Visible="false" />
                         </div>
                     </div>
                 </div>

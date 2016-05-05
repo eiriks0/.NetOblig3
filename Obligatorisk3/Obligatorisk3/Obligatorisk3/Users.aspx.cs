@@ -42,7 +42,7 @@ namespace Obligatorisk3 {
         private static List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
 
         protected void Page_Load(object sender, EventArgs e) {
-            if (Session["New"] == null) {
+            if (Session["UserData"] == null) {
                 Response.Redirect("Login.aspx");
                 return;
             }
@@ -61,10 +61,15 @@ namespace Obligatorisk3 {
             }  
         }
 
+        protected void Page_Unload(object sender, EventArgs e)
+        {
+            ResetData();
+        }
+
         /**
         * Method for updating the progressbar, progress-counter-text and the button text.
         */
-        private void updateProgress() {
+        private void UpdateProgress() {
             PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
 
             QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
@@ -77,7 +82,7 @@ namespace Obligatorisk3 {
         /**
         * Method for resetting the data on this page.
         */
-        private void resetData() {
+        private void ResetData() {
             isFirstLoad = true;
             numOfAskedQuestions = 0.0;
         }
@@ -87,7 +92,7 @@ namespace Obligatorisk3 {
         * then removes the returned ID from the list.
         * This ensures that all IDs returned from this method is unique.
         */
-        private int getUniqueQuestionID() {
+        private int GetUniqueQuestionID() {
             int index = new Random().Next(0, questionIDs.Count());
             int questionIdToReturn = questionIDs[index];
             questionIDs.RemoveAt(index);
@@ -176,9 +181,9 @@ namespace Obligatorisk3 {
         private void DrawQuestion() {
 
             numOfAskedQuestions++;
-            updateProgress();
+            UpdateProgress();
 
-            currentQuestionID = getUniqueQuestionID();
+            currentQuestionID = GetUniqueQuestionID();
 
             sqlConnection.Open();
             queryString = "SELECT * FROM Quiz WHERE QuestionId=" + currentQuestionID;
@@ -210,14 +215,7 @@ namespace Obligatorisk3 {
             sqlConnection.Close();
         }
 
-        protected void B_Logout_Click(object sender, EventArgs e) {
-            resetData();
-
-            Session["New"] = null;
-            Response.Redirect("Login.aspx");
-        }
-
-        protected void Button1_Click(object sender, EventArgs e) {
+        protected void B_Next_Question(object sender, EventArgs e) {
             Debug.WriteLine("Button1_Click() >> currentQuestionID: " + currentQuestionID);
 
             // Handle user answer
@@ -237,7 +235,7 @@ namespace Obligatorisk3 {
 
             // If the user has answered the final question, show results and return.
             if (numOfAskedQuestions >= numOfQuestionsToAsk) {
-                resetData();
+                ResetData();
 
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
@@ -247,15 +245,13 @@ namespace Obligatorisk3 {
                 return;
             }
 
-            updateProgress();
+            UpdateProgress();
             DrawQuestion();
         }
 
         // Handling "new quiz" button
-        protected void Button2_Click(object sender, EventArgs e) {
-            //Session["CurrentPage"] = null;
-            isFirstLoad = true;
-            numOfAskedQuestions = 0.0;
+        protected void B_New_Quiz(object sender, EventArgs e) {
+            ResetData();
 
             Answered.Clear();
             userAnswers.Clear();
@@ -265,7 +261,7 @@ namespace Obligatorisk3 {
             Response.Redirect(Request.RawUrl); // reloads the page
         }
 
-        protected void Button3_Click(object sender, EventArgs e) {
+        protected void B_Save_Highscore(object sender, EventArgs e) {
             // save score to highscore table
         }
     }

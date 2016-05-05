@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Obligatorisk3.Models;
 
 namespace Obligatorisk3
 {
@@ -11,7 +12,18 @@ namespace Obligatorisk3
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (Session["UserData"] != null)
+            {
+                User user = (User)Session["UserData"];
+                if (user.isAdmin)
+                {
+                    ManagerAdmin.Style["display"] = "block";
+                }
+            }
+            else
+            {
+                Response.Redirect("Login.aspx");
+            }
         }
     }
 }

@@ -40,6 +40,15 @@ namespace Obligatorisk3 {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ResultsWrapper;
         
         /// <summary>
+        /// TheScore control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TheScore;
+        
+        /// <summary>
         /// WrongResults control.
         /// </summary>
         /// <remarks>
@@ -56,15 +65,6 @@ namespace Obligatorisk3 {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl CorrectResults;
-        
-        /// <summary>
-        /// TheScore control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TheScore;
         
         /// <summary>
         /// QuestionText control.
