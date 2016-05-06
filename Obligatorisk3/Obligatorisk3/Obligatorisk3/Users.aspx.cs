@@ -63,7 +63,11 @@ namespace Obligatorisk3 {
 
         protected void Page_Unload(object sender, EventArgs e)
         {
-            ResetData();
+            if (!IsPostBack)
+            {
+                ResetData();
+            }
+
         }
 
         /**
