@@ -14,14 +14,19 @@ using System.Xml.Linq;
 using System.Data.SqlClient;
 using System.Diagnostics;
 
-namespace Obligatorisk3 {
-    public partial class Users : System.Web.UI.Page {
+using Obligatorisk3.Models;
+
+
+namespace Obligatorisk3
+{
+    public partial class Users : System.Web.UI.Page
+    {
         static string sqlConnectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
         SqlConnection sqlConnection = new SqlConnection(sqlConnectionString);
         SqlCommand sqlCommand;
         SqlDataReader sqlReader;
         string queryString;
-        
+
         protected static int currentQuestionID; // ID of the currently asked question.
 
         protected static double numOfAskedQuestions = 0.0; // Number of questions asked thus far.
@@ -35,50 +40,43 @@ namespace Obligatorisk3 {
 
         public static List<string> Answered = new List<string>(); // Not sure what this does
 
-        private static bool isFirstLoad = true;
-
         private static int NUM_QUESTIONS_IN_DB = 30;
 
         private static List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
 
-        protected void Page_Load(object sender, EventArgs e) {
-            if (Session["UserData"] == null) {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UserData"] == null)
+            {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            if(isFirstLoad) {
+            if (!IsPostBack)
+            {
                 // Populate list with question IDs
                 questionIDs.Clear();
-                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++) {
+                for (int i = 1; i < NUM_QUESTIONS_IN_DB + 1; i++)
+                {
                     questionIDs.Add(i);
                 }
 
                 // Draw the initial question
                 DrawQuestion();
-
-                isFirstLoad = false;
-            }  
-        }
-
-        protected void Page_Unload(object sender, EventArgs e)
-        {
-            if (!IsPostBack)
-            {
-                ResetData();
             }
-
         }
 
         /**
         * Method for updating the progressbar, progress-counter-text and the button text.
         */
-        private void UpdateProgress() {
+        private void UpdateProgress()
+        {
             PanelProgressbar.Style["width"] = (numOfAskedQuestions / numOfQuestionsToAsk) * 100 + "%";
 
             QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
-            if(numOfAskedQuestions == numOfQuestionsToAsk) {
+            if (numOfAskedQuestions == numOfQuestionsToAsk)
+            {
                 Button1.Text = "Se resultater";
             }
         }
@@ -86,8 +84,8 @@ namespace Obligatorisk3 {
         /**
         * Method for resetting the data on this page.
         */
-        private void ResetData() {
-            isFirstLoad = true;
+        private void ResetData()
+        {
             numOfAskedQuestions = 0.0;
         }
 
@@ -96,7 +94,8 @@ namespace Obligatorisk3 {
         * then removes the returned ID from the list.
         * This ensures that all IDs returned from this method is unique.
         */
-        private int GetUniqueQuestionID() {
+        private int GetUniqueQuestionID()
+        {
             int index = new Random().Next(0, questionIDs.Count());
             int questionIdToReturn = questionIDs[index];
             questionIDs.RemoveAt(index);
@@ -106,15 +105,43 @@ namespace Obligatorisk3 {
             return questionIdToReturn;
         }
 
+        private void CheckIfNewHighscore()
+        {
+            User user = (User)Session["UserData"];
+            sqlConnection.Open();
+            queryString = "SELECT * FROM Highscores WHERE UserId=" + user.userId.ToString();
+            sqlCommand = new SqlCommand(queryString, sqlConnection);
+            sqlReader = sqlCommand.ExecuteReader();
+            sqlReader.Read();
+
+
+            string highscore = sqlReader["Score"].ToString();
+            string amountOfQuestions = sqlReader["AmountOfQuestions"].ToString();
+            int questionsAnswered = Convert.ToInt32(numOfAskedQuestions);
+            int score = Convert.ToInt32(highscore);
+            int total = Convert.ToInt32(amountOfQuestions);
+            //Adds to total
+            total = total + questionsAnswered;
+
+            if (score < questionsAnswered)
+            {
+                string NewHighscore = questionsAnswered.ToString();
+                queryString = "UPDATE Highscores SET Score =" + NewHighscore + " WHERE UserId=" + user.userId.ToString();
+
+            }
+        }
+
         /** 
         * Generates labels based on the ints saved in the WrongAnswerList
         */
-        private void DisplayAnswers() {
+        private void DisplayAnswers()
+        {
             TrafficQuestionImage.ImageUrl = null;
 
             sqlConnection.Open();
 
-            foreach (KeyValuePair<int, bool> userAnswer in userAnswers) {
+            foreach (KeyValuePair<int, bool> userAnswer in userAnswers)
+            {
                 Debug.WriteLine("DisplayAnswers() >> in foreach userAnswers >> userAnswer.Key: " + userAnswer.Key + " usrAnswrBool: " + userAnswer.Value.ToString());
 
                 queryString = "SELECT * FROM Quiz WHERE QuestionId=" + userAnswer.Key;
@@ -147,7 +174,8 @@ namespace Obligatorisk3 {
                 _Answered = Answered[userAnswers.IndexOf(userAnswer)];
                 string WrongAnswer = sqlReader[_Answered].ToString();
 
-                if (!userAnswer.Value) {
+                if (!userAnswer.Value)
+                {
                     AnswerLabel1.Text = "Du svarte:" + " " + WrongAnswer;
                     AnswerLabel1.ForeColor = System.Drawing.Color.Red;
                     WrongResults.Controls.Add(NewQuestionLabel);
@@ -158,7 +186,8 @@ namespace Obligatorisk3 {
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
-                if (userAnswer.Value) {
+                if (userAnswer.Value)
+                {
                     CorrectResults.Controls.Add(NewQuestionLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                     CorrectResults.Controls.Add(AnswerLabel1);
@@ -182,7 +211,8 @@ namespace Obligatorisk3 {
         /** 
          * DrawQuestion is responsible for drawing radiobuttons on the screen and changing some text around
          */
-        private void DrawQuestion() {
+        private void DrawQuestion()
+        {
 
             numOfAskedQuestions++;
             UpdateProgress();
@@ -201,7 +231,8 @@ namespace Obligatorisk3 {
 
             sqlDataReaderKeys = sqlDataReaderKeys.OrderBy(x => new Random().Next()).ToArray();
 
-            for (int i = 0; i < sqlDataReaderKeys.Length; i++) {
+            for (int i = 0; i < sqlDataReaderKeys.Length; i++)
+            {
                 ListItem li = new ListItem();
                 li.Text = sqlReader[sqlDataReaderKeys[i]].ToString();
                 li.Value = (sqlDataReaderKeys[i] == "CorrectAns") ? "Answer4" : sqlDataReaderKeys[i];
@@ -210,7 +241,8 @@ namespace Obligatorisk3 {
                 Answers.Items.Add(li);
             }
 
-            if (sqlReader["Picture"] != null) {
+            if (sqlReader["Picture"] != null)
+            {
                 TrafficQuestionImage.ImageUrl = sqlReader["Picture"].ToString();
             }
 
@@ -219,7 +251,8 @@ namespace Obligatorisk3 {
             sqlConnection.Close();
         }
 
-        protected void B_Next_Question(object sender, EventArgs e) {
+        protected void B_Next_Question(object sender, EventArgs e)
+        {
             Debug.WriteLine("Button1_Click() >> currentQuestionID: " + currentQuestionID);
 
             // Handle user answer
@@ -229,7 +262,8 @@ namespace Obligatorisk3 {
             {
                 userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
                 Answered.Add("CorrectAns");
-            } else {
+            }
+            else {
                 userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
                 Answered.Add(currSelectedRadioValue);
             }
@@ -238,9 +272,10 @@ namespace Obligatorisk3 {
             QuestionText.Text = "";
 
             // If the user has answered the final question, show results and return.
-            if (numOfAskedQuestions >= numOfQuestionsToAsk) {
+            if (numOfAskedQuestions >= numOfQuestionsToAsk)
+            {
                 ResetData();
-
+                CheckIfNewHighscore();
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
                 Button1.Visible = false;
@@ -254,7 +289,8 @@ namespace Obligatorisk3 {
         }
 
         // Handling "new quiz" button
-        protected void B_New_Quiz(object sender, EventArgs e) {
+        protected void B_New_Quiz(object sender, EventArgs e)
+        {
             ResetData();
 
             Answered.Clear();
@@ -265,7 +301,8 @@ namespace Obligatorisk3 {
             Response.Redirect(Request.RawUrl); // reloads the page
         }
 
-        protected void B_Save_Highscore(object sender, EventArgs e) {
+        protected void B_Save_Highscore(object sender, EventArgs e)
+        {
             // save score to highscore table
         }
     }
