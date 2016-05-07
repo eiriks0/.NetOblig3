@@ -13,6 +13,15 @@ namespace Obligatorisk3 {
     public partial class Login {
         
         /// <summary>
+        /// UsernamePasswordAlert control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl UsernamePasswordAlert;
+        
+        /// <summary>
         /// TextBoxUserName control.
         /// </summary>
         /// <remarks>

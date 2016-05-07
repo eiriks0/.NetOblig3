@@ -70,7 +70,7 @@ body {
     box-shadow: none;
 }
 
-#MainContent_Button1, #MainContent_Button2, #MainContent_Button3 {
+#MainContent_NextQuestionButton, #MainContent_RestartButton, #MainContent_SaveScoreButton {
     width: 100%;
     position: absolute;
     bottom: -25px;
@@ -80,11 +80,11 @@ body {
     border-radius: 0;
 }
 
-#MainContent_Button2, #MainContent_Button3 {
+#MainContent_RestartButton, #MainContent_SaveScoreButton {
     width: 50%;
 }
 
-#MainContent_Button3 {
+#MainContent_SaveScoreButton {
     left: 50%;
 }
 

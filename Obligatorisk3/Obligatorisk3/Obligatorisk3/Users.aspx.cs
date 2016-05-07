@@ -13,6 +13,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using Obligatorisk3.Models;
 
 namespace Obligatorisk3 {
     public partial class Users : System.Web.UI.Page {
@@ -24,22 +25,23 @@ namespace Obligatorisk3 {
         
         protected static int currentQuestionID; // ID of the currently asked question.
 
+        private static int NUM_QUESTIONS_IN_DB = 30;
+
+        private static int totalScore = 0;
+        
         protected static double numOfAskedQuestions = 0.0; // Number of questions asked thus far.
 
-        protected double numOfQuestionsToAsk = 5; // The amount of questions to ask.
-
-        // List for storing the user's answers to the questions.
-        public static List<KeyValuePair<int, bool>> userAnswers = new List<KeyValuePair<int, bool>>();
+        protected int numOfQuestionsToAsk = 5; // The amount of questions to ask.
 
         public static string _Answered; // Not sure what this does
 
-        public static List<string> Answered = new List<string>(); // Not sure what this does
-
         private static bool isFirstLoad = true;
 
-        private static int NUM_QUESTIONS_IN_DB = 30;
-
         private static List<int> questionIDs = new List<int>(NUM_QUESTIONS_IN_DB);
+
+        public static List<string> Answered = new List<string>(); // Not sure what this does
+
+        public static List<KeyValuePair<int, bool>> userAnswers = new List<KeyValuePair<int, bool>>();
 
         protected void Page_Load(object sender, EventArgs e) {
             if (Session["UserData"] == null) {
@@ -63,7 +65,10 @@ namespace Obligatorisk3 {
 
         protected void Page_Unload(object sender, EventArgs e)
         {
-            ResetData();
+            if (!Page.IsPostBack)
+            {
+                ResetData();
+            }
         }
 
         /**
@@ -75,7 +80,7 @@ namespace Obligatorisk3 {
             QuestionCounter.Text = numOfAskedQuestions.ToString() + "/" + numOfQuestionsToAsk.ToString();
 
             if(numOfAskedQuestions == numOfQuestionsToAsk) {
-                Button1.Text = "Se resultater";
+                NextQuestionButton.Text = "Se resultater";
             }
         }
 
@@ -107,6 +112,8 @@ namespace Obligatorisk3 {
         */
         private void DisplayAnswers() {
             TrafficQuestionImage.ImageUrl = null;
+
+            TheScore.InnerText = totalScore.ToString();
 
             sqlConnection.Open();
 
@@ -152,6 +159,7 @@ namespace Obligatorisk3 {
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
                     WrongResults.Controls.Add(CorrectAnswerLabel);
                     WrongResults.Controls.Add(new LiteralControl("<br />"));
+                    WrongResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
                 if (userAnswer.Value) {
@@ -165,10 +173,11 @@ namespace Obligatorisk3 {
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
                     CorrectResults.Controls.Add(CorrectAnswerLabel);
                     CorrectResults.Controls.Add(new LiteralControl("<br />"));
+                    CorrectResults.Controls.Add(new LiteralControl("<br />"));
                 }
 
                 sqlReader.Close();
-            }//-end foreach
+            }
 
             sqlConnection.Close();
 
@@ -237,11 +246,12 @@ namespace Obligatorisk3 {
             if (numOfAskedQuestions >= numOfQuestionsToAsk) {
                 ResetData();
 
+                totalScore = userAnswers.Where(c => c.Value == true).ToList().Count;
                 DisplayAnswers();
                 PanelProgressbar.Style["background-color"] = "#0094ff";
-                Button1.Visible = false;
-                Button2.Visible = true;
-                Button3.Visible = true;
+                NextQuestionButton.Visible = false;
+                RestartButton.Visible = true;
+                SaveScoreButton.Visible = true;
                 return;
             }
 
@@ -255,14 +265,68 @@ namespace Obligatorisk3 {
 
             Answered.Clear();
             userAnswers.Clear();
-            Button1.Visible = true;
-            Button2.Visible = false;
-            Button3.Visible = false;
+            NextQuestionButton.Visible = true;
+            RestartButton.Visible = false;
+            SaveScoreButton.Visible = false;
             Response.Redirect(Request.RawUrl); // reloads the page
         }
 
         protected void B_Save_Highscore(object sender, EventArgs e) {
-            // save score to highscore table
+            User user = null;
+
+            if (Session["UserData"] != null)
+            {
+                user = (User)Session["UserData"];
+            }
+            else
+            {
+                // Display error????
+                return;
+            }
+
+            if (InsertScore(user, totalScore, numOfQuestionsToAsk))
+            {
+                SaveScoreButton.Enabled = false;
+                SaveScoreButton.CssClass = "btn btn-success btn-lg";
+                SaveScoreButton.Text = "Scoren din er lagret";
+            }
+            else
+            {
+                // Display error????
+            }
+        }
+
+        private bool InsertScore(User user, int score, int questionsAsked) {
+            
+            sqlConnection.Open();
+
+            SqlCommand command = new SqlCommand(null, sqlConnection);
+            command.CommandText = 
+                "INSERT INTO Highscores " +
+                "(UserId, Score, AmountOfQuestions, CreatedDate) " +
+                "VALUES " +
+                "(@UserId, @Score, @AmountOfQuestions, GETDATE())";
+
+            SqlParameter UserIDParam = new SqlParameter("@UserId", SqlDbType.Int);
+            SqlParameter ScoreParam = new SqlParameter("@Score", SqlDbType.Int);
+            SqlParameter QuestionsAskedParam = new SqlParameter("@AmountOfQuestions", SqlDbType.Int);
+            UserIDParam.Value = user.userId;
+            ScoreParam.Value = score;
+            QuestionsAskedParam.Value = questionsAsked;
+
+            command.Parameters.Add(UserIDParam);
+            command.Parameters.Add(ScoreParam);
+            command.Parameters.Add(QuestionsAskedParam);
+            command.Prepare();
+
+            int affected = command.ExecuteNonQuery();
+
+            if (affected > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

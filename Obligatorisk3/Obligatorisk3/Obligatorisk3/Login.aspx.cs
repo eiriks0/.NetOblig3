@@ -27,6 +27,15 @@ namespace Obligatorisk3
             TextBoxUserName.Focus();
         }
 
+        /*
+         * When the user clicks the login button
+         * Check if LogUserIn returns true
+         * If it does, it means the user was authenticated and we can redirect to the quiz
+         * 
+         * Then do a check to see if the user is an admin
+         * Redirect to the manager page
+         * 
+         */
         protected void Button_Login_Click(object sender, EventArgs e)
         {
 
@@ -49,6 +58,11 @@ namespace Obligatorisk3
             
         }
 
+        /*
+         * Logs a user in (theoretically) based on username and password
+         * Creates a UserData session which holds a User object with the properties UserId, UserName, IsAdmin
+         * 
+         */
         private bool LogUserIn()
         {
             connection.Open();
@@ -85,9 +99,13 @@ namespace Obligatorisk3
             return false;
         }
 
+        /*
+         * Responsible for displaying the error messages if the login is incorrect
+         * 
+         */
         private void ShowUserNamePasswordErrorMessage()
         {
-
+            UsernamePasswordAlert.Style["display"] = "block";
         }
     }
 }

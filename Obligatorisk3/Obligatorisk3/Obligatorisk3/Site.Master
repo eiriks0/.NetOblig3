@@ -61,7 +61,7 @@
                             </li>
                         <% } else { // If the user is logged in %>
                             <li>
-                                <a href="Manager.aspx"><i class="glyphicon glyphicon-user"></i> <span runat="server" id="UserName"></span></a>
+                                <a href="Manager.aspx"><span runat="server" id="NewMessages" class="badge">0</span> <span runat="server" id="UserName"></span></a>
                             </li>
                             <li>
                                 <asp:Button TabIndex="9998" runat="server" CssClass="btn btn-xs btn-danger btn-logout" Text="Logg ut" OnClick="Click_LogOut" />

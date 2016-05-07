@@ -103,30 +103,30 @@ namespace Obligatorisk3 {
         protected global::System.Web.UI.WebControls.Image TrafficQuestionImage;
         
         /// <summary>
-        /// Button1 control.
+        /// NextQuestionButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button1;
+        protected global::System.Web.UI.WebControls.Button NextQuestionButton;
         
         /// <summary>
-        /// Button2 control.
+        /// RestartButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button2;
+        protected global::System.Web.UI.WebControls.Button RestartButton;
         
         /// <summary>
-        /// Button3 control.
+        /// SaveScoreButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button3;
+        protected global::System.Web.UI.WebControls.Button SaveScoreButton;
     }
 }

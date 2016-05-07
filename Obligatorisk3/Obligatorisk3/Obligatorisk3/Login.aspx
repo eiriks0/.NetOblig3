@@ -8,6 +8,7 @@
         <div class="row">
             <div class="col-md-6 col-md-offset-1">
                 <h4>Vennligst logg inn for å fortsette</h4>
+                <div runat="server" id="UsernamePasswordAlert" style="display: none;" class="alert alert-danger"><strong>Obs!</strong> Feil brukernavn/passord</div>
                 <table class="auto-style2">
                     <tr>
                         <td class="auto-style4">Brukernavn:</td>
