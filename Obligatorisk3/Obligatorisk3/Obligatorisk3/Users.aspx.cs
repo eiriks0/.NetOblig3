@@ -15,8 +15,6 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using Obligatorisk3.Models;
 
-using Obligatorisk3.Models;
-
 
 namespace Obligatorisk3
 {
@@ -36,7 +34,7 @@ namespace Obligatorisk3
         
         protected static double numOfAskedQuestions = 0.0; // Number of questions asked thus far.
 
-        protected int numOfQuestionsToAsk = 5; // The amount of questions to ask.
+        protected int numOfQuestionsToAsk = 20; // The amount of questions to ask.
 
         public static string _Answered; // Not sure what this does
 
@@ -150,7 +148,7 @@ namespace Obligatorisk3
                 NewQuestionLabel.Text = question;
                 NewQuestionLabel.Font.Size = 12;
                 NewQuestionLabel.Font.Bold = true;
-                AnswerLabel1.Text = "1:" + " " + Answer1 + _Answered;
+                AnswerLabel1.Text = "1:" + " " + Answer1;
                 AnswerLabel2.Text = "2:" + " " + Answer2;
                 AnswerLabel3.Text = "3:" + " " + Answer3;
                 CorrectAnswerLabel.Text = "Riktig svar:" + " " + CorrectAnswer;
@@ -193,9 +191,9 @@ namespace Obligatorisk3
 
             sqlConnection.Close();
 
-            ResultsWrapper.Style["display"] = "block";
+            userAnswers.Clear();
 
-            Answered.Clear();
+            ResultsWrapper.Style["display"] = "block";
         }
 
         /** 
@@ -250,11 +248,11 @@ namespace Obligatorisk3
 
             if (currSelectedRadioValue == "Answer4") // we know that the value "answer4" contains the correct question text
             {
-                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, true));
+                userAnswers.Add( new KeyValuePair<int, bool>(currentQuestionID, true) );
                 Answered.Add("CorrectAns");
             }
             else {
-                userAnswers.Insert(0, new KeyValuePair<int, bool>(currentQuestionID, false));
+                userAnswers.Add( new KeyValuePair<int, bool>(currentQuestionID, false) );
                 Answered.Add(currSelectedRadioValue);
             }
 
