@@ -69,7 +69,7 @@ namespace Obligatorisk3
             }  
         }
 
-        protected void Page_Unload(object sender, EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
