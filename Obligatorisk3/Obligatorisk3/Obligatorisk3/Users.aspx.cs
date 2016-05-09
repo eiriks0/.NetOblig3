@@ -195,7 +195,7 @@ namespace Obligatorisk3
 
             ResultsWrapper.Style["display"] = "block";
 
-            Answered = new List<string>();
+            Answered.Clear();
         }
 
         /** 
