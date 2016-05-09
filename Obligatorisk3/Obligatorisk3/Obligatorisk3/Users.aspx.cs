@@ -194,6 +194,8 @@ namespace Obligatorisk3
             sqlConnection.Close();
 
             ResultsWrapper.Style["display"] = "block";
+
+            Answered = new List<string>();
         }
 
         /** 
